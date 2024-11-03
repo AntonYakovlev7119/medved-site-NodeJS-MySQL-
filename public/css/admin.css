@@ -1,0 +1,503 @@
+.page-layout {
+  background: var(--light-wood);
+  padding-bottom: 30px;
+}
+
+.admin-panel {
+  position: relative;
+  display: block;
+  height: 100%;
+  margin: 30px 100px 0 100px;
+}
+
+.admin-navigation {
+  display: flex;
+  justify-content: space-between;
+}
+
+.admin-navigation nav {
+  display: flex;
+}
+
+.nav__item {
+  display: block;
+  font-size: calc(15px + 0.5vw);
+  font-weight: 500;
+  color: black;
+  padding: 5px 15px;
+}
+
+.nav__item.active {
+  border-radius: 10px 10px 0 0;
+  background: var(--light);
+}
+
+.sign-out-button {
+  display: flex;
+  align-items: center;
+  font-size: calc(15px + 0.3vw);
+  color: black;
+  margin-right: 20px;
+  padding: 8px 0;
+}
+
+main {
+  min-height: 80vh;
+  padding: 50px;
+  background: var(--light);
+  border-radius: 0 15px 15px;
+}
+
+/* Управление контентом */
+
+.cms-content,
+.catalog-managment-panel,
+.orders-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+h2 {
+  display: block;
+  font-size: calc(15px + 0.5vw);
+  margin-top: 20px;
+}
+
+#section_select {
+  font-size: calc(15px + 0.3vw);
+  padding: 5px 0;
+  text-align: center;
+}
+
+form.cms_managment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  max-width: 50vw;
+  width: 100%;
+  margin: 0 50px;
+}
+
+#cms_text_area {
+  width: 100%;
+  min-height: 50vh;
+  max-height: 70vh;
+  font-size: calc(15px + 0.3vw);
+  padding: 10px;
+  border-radius: 5px;
+  resize: vertical;
+}
+
+.save_changes_button {
+  font-size: calc(15px + 0.4vw);
+  color: white;
+  padding: 7px 20px;
+  background: var(--dark-wood);
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: 0.15s ease-in;
+}
+
+.save_changes_button:hover {
+  background-color: var(--wood);
+  transition: 0.15s ease-in;
+}
+
+.save_changes_button:active {
+  background-color: var(--btn-bg-color-active);
+}
+
+/* Управление товарами */
+
+.catalog-managment-panel {
+}
+
+.managment-menu {
+}
+
+.managment-menu button {
+  font-family: Roboto;
+  font-size: calc(15px + 0.3vw);
+  color: rgb(255 255 255);
+  padding: 8px 20px;
+  margin: 0 25px;
+  background: var(--dark-wood);
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: 0.15s ease-in;
+}
+
+.managment-menu button:hover {
+  background-color: var(--wood);
+}
+
+.managment-menu button:active {
+  background-color: var(--btn-bg-color-active);
+}
+
+.add__product {
+}
+
+.edit__product {
+}
+
+.delete__product {
+}
+
+#product-select,
+#order-select {
+  display: none;
+  font-size: calc(15px + 0.3vw);
+  padding: 5px 15px;
+  margin-top: 50px;
+  text-align: center;
+}
+
+#product-characteristics {
+  position: relative;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 500px;
+  width: 100%;
+  padding: 20px 30px;
+  margin-top: 50px;
+  border: 1px solid black;
+  border-radius: 10px;
+}
+
+#product-characteristics input,
+#product__description {
+  font-size: calc(15px + 0.3vw);
+  padding: 5px 10px;
+  margin: 5px 0;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+
+#product-characteristics label {
+  font-size: calc(15px + 0.2vw);
+  align-self: flex-start;
+  margin: 5px 0;
+}
+
+#product__img-view {
+  max-height: 300px;
+  border-radius: 10px;
+}
+
+#product__name {
+}
+
+#product__description {
+  min-height: 120px;
+  max-height: 200px;
+  max-width: 400px;
+}
+
+#product__price {
+}
+
+input#product__img {
+  border: 0;
+  font-size: calc(15px + 0.15vw);
+  cursor: pointer;
+}
+
+/* Кнопка добавления изображения товара */
+
+.product__img {
+  position: relative;
+  display: inline-block;
+}
+.product__img-btn {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  font-size: 16px;
+  vertical-align: middle;
+  color: rgb(255 255 255);
+  text-align: center;
+  border-radius: 5px;
+  background-color: var(--dark-wood);
+  line-height: 22px;
+  height: 40px;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  border: none;
+  margin: 0;
+  transition: background-color 0.2s;
+}
+.product__img-text {
+  padding: 0 10px;
+  line-height: 40px;
+  display: inline-block;
+}
+.product__img input[type="file"] {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+  display: block;
+  width: 0;
+  height: 0;
+}
+
+.product__img-btn:hover {
+  background-color: var(--wood);
+}
+.product__img:active .product__img-btn {
+  background-color: var(--btn-bg-color-active);
+}
+
+/* ------------------------------ */
+
+#product-characteristics button {
+  font-size: calc(15px + 0.4vw);
+  font-weight: 300;
+  color: rgb(255 255 255);
+  padding: 5px 20px;
+  margin-top: 15px;
+  background: var(--dark-wood);
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: var(--btn-transition);
+}
+
+#product-characteristics button:hover {
+  background-color: var(--wood);
+}
+
+#product-characteristics button:active {
+  background-color: var(--btn-bg-color-active);
+}
+
+/* Управление заказами */
+
+.orders-panel {
+}
+
+.orders {
+  height: 70vh;
+  max-width: 60vw;
+  width: 100%;
+  padding: 10px;
+  background-color: white;
+  border-radius: 7px;
+  overflow-y: auto;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  cursor: default;
+}
+
+.orders-table thead tr {
+  border: 0;
+}
+
+.orders-table tr {
+  height: 40px;
+  border-top: 1px solid black;
+  border-bottom: 1px solid rgba(156, 156, 156, 0.616);
+}
+
+.orders-table tr:focus {
+  background-color: rgb(69, 58, 218);
+}
+
+.orders-table td {
+  border-right: 1px solid rgba(156, 156, 156, 0.616);
+  text-align: center;
+}
+
+/* Окно просмотра заказа */
+
+.order-content {
+  position: fixed;
+  height: 70vh;
+  width: 70vw;
+  top: 15%;
+  left: 15%;
+  background: var(--light);
+  border-radius: 10px;
+  border: 3px solid var(--light);
+  z-index: -1;
+}
+
+.order-content.active {
+  z-index: 1002;
+}
+
+.order-content-inner {
+  height: 90%;
+  overflow-y: auto;
+}
+
+.order-content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 90%;
+  padding: 20px;
+}
+
+.order__close-cross {
+  position: absolute;
+  top: -30px;
+  right: -50px;
+  cursor: pointer;
+  z-index: -1;
+}
+
+.order__close-cross.active {
+  z-index: 999;
+}
+
+.order__close-cross img {
+  height: 50px;
+  width: 50px;
+}
+
+.order-title {
+  font-size: calc(15px + 0.6vw);
+  font-weight: 500;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.order__product {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-top: 1px solid grey;
+  border-bottom: 1px solid grey;
+}
+
+.order-product__img {
+  width: 150px;
+  border-radius: 10px;
+}
+
+.order-product__name {
+  font-size: calc(15px + 0.3vw);
+  font-weight: 500;
+}
+
+.order-product__price {
+  font-weight: 500;
+}
+
+.order-product__count {
+  font-weight: 500;
+}
+
+.dark-canvas {
+  content: "";
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.849);
+  background: var(--dark);
+  opacity: 0.85;
+  cursor: pointer;
+  z-index: -1;
+}
+
+.dark-canvas.active {
+  z-index: 997;
+}
+
+/* Окно просмотра вопроса */
+
+/* Страница входа */
+
+.page-layout.sign-in {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-layout.sign-in h1 {
+  margin-bottom: 30px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-form input {
+  font-size: calc(15px + 0.3vw);
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.login-form button {
+  font-size: calc(15px + 0.3vw);
+  color: white;
+  padding: 5px 10px;
+  background: var(--dark-wood);
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.1s ease-in;
+}
+
+.login-form button:hover {
+  background: var(--wood);
+}
+
+.login-form button:active {
+  background: var(--btn-bg-color-active);
+}
+
+/* Полоса прокрутки окна заказа */
+
+.order-content-inner::-webkit-scrollbar {
+  width: 8px;
+}
+
+.order-content-inner::-webkit-scrollbar-track {
+}
+
+.order-content-inner::-webkit-scrollbar-thumb {
+  background-color: var(--dark-wood);
+  border-radius: 20px;
+  /* border: 3px solid var(--wood); */
+}
+
+body::-webkit-scrollbar {
+  width: 12px;
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--primary-color);
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: var(--btn-bg-color);
+  border-radius: 20px;
+  border: 3px solid var(--primary-color);
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background-color: var(--btn-bg-color-hover);
+}

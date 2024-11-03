@@ -1,0 +1,227 @@
+@media screen and (max-width: 1024px) {
+  .wood__description {
+    max-width: 650px;
+    width: 100%;
+  }
+
+  .container {
+    /* flex-direction: column; */
+    /* align-items: center; */
+  }
+}
+
+@media screen and (max-width: 905px) {
+  #site-header {
+    min-height: 100vh;
+    padding-bottom: var(--header-inner-padding-bottom-mobile);
+  }
+
+  .header-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 92vh;
+    padding-top: 80px;
+  }
+
+  .header-inner::before {
+    z-index: 1;
+  }
+
+  .header__mobile-background {
+    position: absolute;
+    height: calc(100% - var(--header-inner-padding-top-mobile));
+    width: 100%;
+    background-image: url("../img/header-background.jpg");
+    background-position: center;
+    background-size: cover;
+  }
+
+  .header-inner-left-side {
+    height: auto;
+    margin: 0 auto;
+    background: transparent;
+  }
+
+  .header-logo-container {
+    margin-left: 0;
+    margin-bottom: 20px;
+    margin-top: 50px;
+  }
+
+  .header__logo {
+    width: calc(var(--index) * 20);
+    max-width: 465px;
+  }
+
+  .header-inner-left-side__scew {
+    display: none;
+  }
+
+  .header-inner-right-side {
+    position: static;
+    justify-content: center;
+    align-items: center;
+    background: none;
+  }
+
+  .header__site-description {
+    position: relative;
+    display: block;
+    align-self: flex-end;
+    margin-top: 55px;
+    margin-bottom: 50px;
+  }
+
+  .header__site-description span {
+    font-size: calc(15px + 1.8vw);
+    margin: 0 40px 0 40px;
+    text-align: center;
+  }
+
+  .header-nav-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ----------------------------------- */
+
+  .wood-product-description-container,
+  .wood-description-container {
+    /* width: 90vw; */
+  }
+
+  .wood-description-container {
+    margin-top: 30px;
+    margin-left: 0;
+  }
+
+  .wood-description {
+  }
+
+  .wood-product-description-container {
+    margin-bottom: 30px;
+  }
+
+  .wood-product__description {
+    margin-right: 0;
+  }
+
+  .order__stage {
+    margin: 0 30px;
+  }
+
+  .about-company__company-description {
+    margin: 0 calc(var(--index) * 3);
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .header-nav-container {
+    overflow-y: hidden;
+    transition: 0.3s;
+  }
+
+  .header-nav-container nav {
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    top: 80px;
+  }
+
+  .header-nav-container .nav__item {
+    text-align: center;
+  }
+
+  .header-nav-container .header__telephone {
+    position: absolute;
+    margin-top: 10px;
+    margin-left: 10px;
+    top: 235px;
+  }
+
+  .toggle-menu {
+    display: block;
+  }
+
+  .section-title {
+    margin-bottom: 20px !important;
+  }
+
+  .page-section {
+    padding: 30px 0;
+  }
+
+  .text-container {
+    width: inherit !important;
+    margin: 30px 20px;
+  }
+
+  .wood {
+    padding: 150px 0 20px 0 !important;
+  }
+
+  .about-company__company-description {
+    margin: 0 20px !important;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .products-container {
+    padding: 60px 25px 60px 25px !important;
+  }
+
+  .product__description {
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .copyright {
+    /* font-size: 12px; */
+  }
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-weight: 100;
+  src: url(../fonts/Roboto-Thin.ttf);
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-weight: 300;
+  src: url(../fonts/Roboto-Light.ttf);
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-weight: 400;
+  src: url(../fonts/Roboto-Regular.ttf);
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-weight: 500;
+  src: url(../fonts/Roboto-Medium.ttf);
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-weight: 700;
+  src: url(../fonts/Roboto-Bold.ttf);
+}
+
+@font-face {
+  font-family: "Ostrovsky";
+  /* font-weight: 700; */
+  src: url(../fonts/Ostrovsky.otf);
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url(../fonts/Montserrat.ttf);
+}

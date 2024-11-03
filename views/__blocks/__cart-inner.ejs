@@ -1,0 +1,28 @@
+<% products.forEach((product)=>{ %>
+<div class="cart__product" data-id="<%= product.id %>">
+  <div class="cart__product-container">
+    <img
+      class="cart-product__img"
+      src="../product_images/<%= product.img %>"
+      alt="Картинка товара"
+    />
+    <p class="cart-product__name"><%= product.title %></p>
+    <p class="cart-product__price"><%= product.price %>р.</p>
+    <div class="cart-product-count-container">
+      <img
+        class="cart-product__decrease-count"
+        src="../img/minus.png"
+        alt="Уменьшить"
+      />
+      <p class="cart-product__count"><%= product.count %></p>
+      шт.
+      <img
+        class="cart-product__increase-count"
+        src="../img/plus.png"
+        alt="Прибавить"
+      />
+    </div>
+    <p class="cart-product__delete">Удалить</p>
+  </div>
+</div>
+<% }) %>

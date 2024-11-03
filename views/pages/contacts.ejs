@@ -1,0 +1,34 @@
+<%-include("../__blocks/__header.ejs") %>
+
+<main class="page-content">
+  <h1 class="page-title">Контакты</h1>
+  <section class="contacts">
+    <div class="container">
+      <p class="contacts__email">
+        <strong>Email: </strong>medved-vyborg@yandex.ru
+      </p>
+      <p class="contacts__telephone">
+        <strong>Телефон: </strong>+7 (931) 432-55-44
+      </p>
+      <p class="contacts__adress">
+        <strong>Адрес: </strong>г. Выборг, ул. Кривоносова, д. 13, офис 231
+      </p>
+    </div>
+  </section>
+
+  <section class="company-location">
+    <div class="company-location-container container">
+      <script
+        type="text/javascript"
+        charset="utf-8"
+        async
+        src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A4408c31e2243f85c049a05dc9a49055b81d4c81a42dc9f4e613655cf872870eb&amp;width=auto&amp;height=auto&amp;lang=ru_RU&amp;scroll=false"
+      ></script>
+    </div>
+  </section>
+
+  <%-include("../__blocks/__cart.ejs") %>
+  <%-include("../__blocks/__scroll-top-button.ejs") %>
+</main>
+
+<%-include("../__blocks/__footer.ejs") %>

@@ -1,0 +1,38 @@
+<div class="cart">
+  <div class="cart-inner">
+    <p class="cart-title">Корзина</p>
+    <div class="cart-container"></div>
+  </div>
+  <button class="cart-button">Оформить заказ</button>
+
+  <div class="cart__close-cross">
+    <img src="../img/close-cross-2.png" alt="Закрыть" />
+  </div>
+</div>
+
+<div class="cart-dark-canvas"></div>
+
+<div class="cart-icon">
+  <img src="./img/cart-icon.png" alt="" />
+
+  <div class="cart-products-count-indicator"></div>
+</div>
+
+<div class="client-info">
+  <p class="client-info-title">Введите ваши персональные данные</p>
+  <form method="post" name="client_info_form" id="client-info-form">
+    <div class="client-info-form-container">
+      <label for="client-name">Имя</label>
+      <input type="text" name="client-name" required />
+      <label for="client-telephone">Телефон</label>
+      <input
+        type="tel"
+        name="client-telephone"
+        id="client-telephone"
+        required
+      />
+    </div>
+
+    <button type="submit" class="confirm-cart__button">Подтвердить</button>
+  </form>
+</div>

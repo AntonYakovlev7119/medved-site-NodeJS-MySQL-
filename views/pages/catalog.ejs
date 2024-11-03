@@ -1,0 +1,35 @@
+<%-include("../__blocks/__header.ejs") %>
+
+<main class="page-content">
+  <h1 class="page-title">Наша продукция</h1>
+  <section class="catalog">
+    <div class="catalog-container container">
+      <% products.forEach((product)=>{ %>
+      <div class="catalog__product-card" data-id="<%= product.id %>">
+        <div class="catalog__product-card-wrapper">
+          <img src="./product_images/<%= product.img %>" alt="" />
+
+          <div class="catalog__product-card-info">
+            <p class="catalog__product-card-title"><%= product.title %></p>
+            <div class="catalog__product-card-description"> 
+              <%= product.desc %>
+            </div>
+            <div class="catalog__product-card-price">
+             <span>
+              <%= product.price %><span class="catalog__product-card-price-unit"> &#8381 / м<sup>3</sup></span>
+             </span>
+            </div>
+            <button>Добавить</button>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  </section>
+
+  <%-include("../__blocks/__cart.ejs") %>
+
+  <%-include("../__blocks/__scroll-top-button.ejs") %>
+</main>
+
+<%-include("../__blocks/__footer.ejs") %>

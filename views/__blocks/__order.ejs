@@ -1,0 +1,12 @@
+<% order.forEach((elem)=>{ %>
+<div class="order__product">
+  <img
+    class="order-product__img"
+    src="../product_images/<%= elem.img %>"
+    alt="Картинка товара"
+  />
+  <p class="order-product__name"><%= elem.title %></p>
+  <p class="order-product__price"><%= elem.price %>р.</p>
+  <p class="order-product__count"><%= elem.count %> шт.</p>
+</div>
+<% }) %>
