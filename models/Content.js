@@ -1,7 +1,8 @@
-const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("medvedDB.db");
+const mysql = require("mysql2");
 const { get } = require("../routes/authRoute");
 const ApiError = require("./Error");
+const mysqlPassword = process.env.MYSQL_PASSWORD;
+const mysqlDatabase = process.env.MYSQL_DATABASE;
 
 class Content {
   static getPageContentSortedByPage() {
@@ -32,7 +33,6 @@ class Content {
   static async getAllPagesContent() {
     const getData = new Promise((res, rej) => {
       const content = {};
-
       db.all("SELECT * FROM cms_data", (err, data) => {
         if (err) return rej(err);
         data.forEach((elem) => {
@@ -138,58 +138,33 @@ class Content {
   }
 
   static async updateCmsData(data) {
-    const cmsChanges = data;
-    const cmsRequests = [
-      new Promise((res, rej) => {
-        db.run(
-          "UPDATE cms_data1 SET content=? WHERE section=?",
-          [
-            "Мы производим различные древесные изделия по доступным ценам. В ассортимент нашей продукции входят дрова, доски, брусья, пластины и другие изделия. Также мы предоставляем услуги по расчистке древесных насаждений. Мы гарантируем высокое качество нашей продукции и доступные цены!",
-            "company_desc",
-          ],
+    try {
+      const cmsChanges = data;
+      // console.log(cmsChanges);
 
-          (err) => {
-            console.log(1);
-            if (err) {
-              rej(new ApiError(500, err.message));
-            }
-            res();
-            // console.log(elem[1], elem[0]);
-          }
-        );
-      }),
-    ];
+      // new Promise((res, rej) => {
+      //   db.run(
+      //     "UPDATE cms_data1 SET content=? WHERE section=?",
+      //     [cmsChanges[1], cmsChanges[0]],
+      //     (err) => {
+      //       if (err) {
+      //         isError = true;
 
-    cmsChanges.forEach((elem) => {
-      const promise = new Promise((res, rej) => {
-        db.run(
-          "UPDATE cms_data SET content=? WHERE section=?",
-          [elem[1], elem[0]],
-          (err) => {
-            if (err) {
-              console.log(2);
-              rej(new ApiError(500, err.message));
-            }
-            res();
-            // console.log(elem[1], elem[0]);
-          }
-        );
-      });
-      // .catch((err) => {
+      //         console.log(isError);
+      //         rej(new ApiError(500, err.message));
+      //       }
+      //       res();
+      //     }
+      //   );
+      // }).catch((err) => {
       //   console.log(err.message);
       // });
 
-      cmsRequests.push(promise);
-    });
-
-    Promise.all(cmsRequests)
-      .then(() => {
-        console.log("fd");
-      })
-      .catch((err) => {
-        console.log(err);
-        db.close();
-      });
+      // console.log([cmsChanges[0], cmsChanges[1]]);
+    } catch (err) {
+      console.log(err);
+    }
+    // if(isError) rej()
 
     // [
     //   {
@@ -198,13 +173,29 @@ class Content {
     //       "Доставка дров, древесных изделий, перевозка грузов, расчистка участков от древесных насаждений fdfdfdf",
     //   },
     //   { $section: "email", $content: "medved-vyborg@yandex.rudfdf" },],
+  }
 
-    //     Мы производим различные древесные изделия по доступным ценам. В
-    //             ассортимент нашей продукции входят дрова, доски, брусья, пластины и
-    //             другие изделия. Также мы предоставляем услуги по расчистке древесных
-    //             насаждений.
-    // Мы гарантируем высокое качество нашей продукции и доступные
-    //             цены!
+  static async requestToDB(dbAction) {
+    const connection = mysql.createConnection({
+      host: "localhost",
+      user: "root",
+      database: mysqlDatabase,
+      password: mysqlPassword,
+    });
+
+    dbAction();
+
+    connection.end((err) => {
+      if (err) {
+        return console.log("Ошибка при закрытии подключения:", err);
+      } else {
+        console.log("Подключение закрыто");
+      }
+    });
+  }
+
+  static createQuery() {
+    let sql = "";
   }
 
   static test() {

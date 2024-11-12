@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const path = require("path");
-const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || "localhost";
@@ -15,7 +14,6 @@ const authMiddleware = require("./middleware/authMiddleware");
 
 const ApiError = require("./models/Error");
 const Content = require("./models/Content");
-// const { log } = require("console");
 
 let cmsContent = null;
 
