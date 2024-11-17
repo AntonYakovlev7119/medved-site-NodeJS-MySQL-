@@ -52,7 +52,23 @@ app.get("/test", async (req, res, next) => {
   // });
 });
 
-app.post("/test", async (req, res) => {});
+app.get("/test2", async (req, res) => {
+  const result = await Content.requestToDB(
+    // "UPDATE cms_data SET content='новый контент' WHERE section='wood3' "
+    "SELECT * FROM cms_data"
+  );
+
+  res.json(result);
+});
+
+app.get("/test3", async (req, res) => {
+  const result = Content.requestToDB2(
+    // "UPDATE cms_data SET content='новый контент' WHERE section='wood3' "
+    "SELECT * FROM cms_data"
+  );
+
+  res.json(result);
+});
 
 app.get("/", authMiddleware, async (req, res, next) => {
   try {
@@ -104,21 +120,32 @@ app.use((req, res) => {
   res.render("error", { err: 404, message: "Такой страницы не существует" });
 });
 
-app.listen(PORT, HOST, () => {
-  new Promise(async (res, rej) => {
-    cmsContent = await Content.getPageContentSortedByPage();
+const server = app.listen(PORT, HOST, () => {
+  // new Promise(async (res, rej) => {
+  //   cmsContent = await Content.getPageContentSortedByPage();
 
-    if (cmsContent instanceof Error) return rej(cmsContent);
-    else {
-      console.log("Pages content was successfully loaded from datebase");
-      return res(cmsContent);
-    }
-  })
-    .catch((err) => {
-      console.log(err);
-      return process.exit();
-    })
-    .then(() => {
-      return console.log(`Server is running on port ${PORT}`);
-    });
+  //   if (cmsContent instanceof Error) return rej(cmsContent);
+  //   else {
+  //     console.log("Pages content was successfully loaded from datebase");
+  //     return res(cmsContent);
+  //   }
+  // })
+  //   .catch((err) => {
+  //     console.log(err);
+  //     return process.exit();
+  //   })
+  //   .then(() => {
+  //     return console.log(`Server is running on port ${PORT}`);
+  //   });
+  console.log(`Server is running on port ${PORT}`);
+});
+
+process.on("SIGINT", () => {
+  console.log("SIGINT signal received.");
+
+  server.close(() => {
+    console.log("Closed out remaining connections");
+
+    process.exit();
+  });
 });

@@ -1,27 +1,66 @@
 const mysql = require("mysql2");
 const { get } = require("../routes/authRoute");
 const ApiError = require("./Error");
-const mysqlPassword = process.env.MYSQL_PASSWORD;
-const mysqlDatabase = process.env.MYSQL_DATABASE;
+
+const dbPoolConfig = {
+  connectionLimit: 30,
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  database: process.env.MYSQL_DATABASE,
+  password: process.env.MYSQL_PASSWORD,
+};
+
+const dbConnectionlConfig = {
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  database: process.env.MYSQL_DATABASE,
+  password: process.env.MYSQL_PASSWORD,
+};
+
+const pool = mysql.createPool(dbPoolConfig).promise();
 
 class Content {
-  static getPageContentSortedByPage() {
+  // static getPageContentSortedByPage() {
+  //   try {
+  //     return new Promise((res, rej) => {
+  //       const content = {};
+  //       db.all("SELECT page, section, content FROM cms_data", (err, data) => {
+  //         if (err) rej(err);
+  //         data.forEach((elem) => {
+  //           if (content.hasOwnProperty(elem.page)) {
+  //             content[elem.page][elem.section] = elem.content;
+  //           } else {
+  //             content[elem.page] = {
+  //               [elem.section]: elem.content,
+  //             };
+  //           }
+  //         });
+  //         res(content);
+  //       });
+  //     });
+  //   } catch (err) {
+  //     return ApiError.badRequest(
+  //       "Не удалось получить данные страницы из базы данных"
+  //     );
+  //   }
+  // }
+
+  static async getPageContentSortedByPage() {
     try {
-      return new Promise((res, rej) => {
-        const content = {};
-        db.all("SELECT page, section, content FROM cms_data", (err, data) => {
-          if (err) rej(err);
-          data.forEach((elem) => {
-            if (content.hasOwnProperty(elem.page)) {
-              content[elem.page][elem.section] = elem.content;
-            } else {
-              content[elem.page] = {
-                [elem.section]: elem.content,
-              };
-            }
-          });
-          res(content);
+      const content = {};
+
+      db.all("SELECT page, section, content FROM cms_data", (err, data) => {
+        if (err) rej(err);
+        data.forEach((elem) => {
+          if (content.hasOwnProperty(elem.page)) {
+            content[elem.page][elem.section] = elem.content;
+          } else {
+            content[elem.page] = {
+              [elem.section]: elem.content,
+            };
+          }
         });
+        res(content);
       });
     } catch (err) {
       return ApiError.badRequest(
@@ -141,6 +180,18 @@ class Content {
     try {
       const cmsChanges = data;
       // console.log(cmsChanges);
+      console.log(cmsChanges);
+
+      // await pool
+      //   .query(
+      //     "UPDATE cms_data SET content = ? WHERE section IN (?);",
+      //     cmsChanges
+      //   )
+      //   .then(() => {
+      //     return "Данные обновлены";
+      //   });
+
+      // ==============
 
       // new Promise((res, rej) => {
       //   db.run(
@@ -162,7 +213,7 @@ class Content {
 
       // console.log([cmsChanges[0], cmsChanges[1]]);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
     // if(isError) rej()
 
@@ -175,39 +226,22 @@ class Content {
     //   { $section: "email", $content: "medved-vyborg@yandex.rudfdf" },],
   }
 
-  static async requestToDB(dbAction) {
-    const connection = mysql.createConnection({
-      host: "localhost",
-      user: "root",
-      database: mysqlDatabase,
-      password: mysqlPassword,
-    });
+  static async requestToDB(sql, dbAction) {
+    const [result] = await pool.query(sql);
 
-    dbAction();
-
-    connection.end((err) => {
-      if (err) {
-        return console.log("Ошибка при закрытии подключения:", err);
-      } else {
-        console.log("Подключение закрыто");
-      }
-    });
+    return result;
   }
 
-  static createQuery() {
-    let sql = "";
-  }
-
-  static test() {
-    try {
-    } catch (err) {
-      next(
-        ApiError.badRequest(
-          "Не получилось получить данные продукции из базы данных"
-        )
-      );
-    }
-  }
+  // static test() {
+  //   try {
+  //   } catch (err) {
+  //     next(
+  //       ApiError.badRequest(
+  //         "Не получилось получить данные продукции из базы данных"
+  //       )
+  //     );
+  //   }
+  // }
 }
 
 module.exports = Content;

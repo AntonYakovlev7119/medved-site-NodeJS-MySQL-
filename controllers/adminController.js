@@ -50,9 +50,11 @@ class Admin {
     try {
       const dbRequest = await Content.updateCmsData(cmsContentChanges);
 
-      if (dbRequest instanceof Error) throw dbRequest;
-
-      cmsContent = await Content.getAllPagesContent();
+      if (dbRequest instanceof Error) {
+        throw dbRequest;
+      } else {
+        // cmsContent = await Content.getAllPagesContent();
+      }
 
       return res.json(dbRequest);
     } catch (err) {
