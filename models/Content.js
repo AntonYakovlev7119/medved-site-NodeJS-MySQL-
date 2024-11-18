@@ -178,18 +178,30 @@ class Content {
 
   static async updateCmsData(data) {
     try {
-      const cmsChanges = data;
+      // const cmsChanges = data;
+      const cmsChanges = [
+        [
+          "г. Выборг, ул. Кривоносова, д. 13, офис 231",
+          "+7 (931) 432-55-44",
+          "medved-vyborg@yandex.ru",
+        ],
+        ["adress", "telephone", "email"],
+      ];
+      // [
+      //   ["+7 (931) 432-55-44", "telephone"],
+      //   ["г. Выборг, ул. Кривоносова, д. 13, офис 231", "adress"],
+      //   ["medved-vyborg@yandex.ru", "email"],
+      // ];
       // console.log(cmsChanges);
-      console.log(cmsChanges);
 
-      // await pool
-      //   .query(
-      //     "UPDATE cms_data SET content = ? WHERE section IN (?);",
-      //     cmsChanges
-      //   )
-      //   .then(() => {
-      //     return "Данные обновлены";
-      //   });
+      await pool
+        .query(
+          "UPDATE cms_data SET content = ? WHERE section IN (?);",
+          cmsChanges
+        )
+        .then(() => {
+          return "Данные обновлены";
+        });
 
       // ==============
 
