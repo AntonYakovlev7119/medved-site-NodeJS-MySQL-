@@ -177,56 +177,91 @@ class Content {
   }
 
   static async updateCmsData(data) {
-    try {
-      // const cmsChanges = data;
-      const cmsChanges = [
-        [
-          "г. Выборг, ул. Кривоносова, д. 13, офис 231",
-          "+7 (931) 432-55-44",
-          "medved-vyborg@yandex.ru",
-        ],
-        ["adress", "telephone", "email"],
-      ];
-      // [
-      //   ["+7 (931) 432-55-44", "telephone"],
-      //   ["г. Выборг, ул. Кривоносова, д. 13, офис 231", "adress"],
-      //   ["medved-vyborg@yandex.ru", "email"],
-      // ];
-      // console.log(cmsChanges);
+    // const cmsChanges = data;
+    const cmsChanges = [
+      ["+7 (931) 432-55-44", "telephone"],
+      ["г. Выборг, ул. Кривоносова, д. 13, офис 231", "adress"],
+      ["medved-vyborg@yandex.ru", "email"],
+    ];
+    // console.log(cmsChanges);
+    if (cmsChanges.length > 1) {
+      try {
+        const connection = await pool.getConnection();
 
-      await pool
-        .query(
-          "UPDATE cms_data SET content = ? WHERE section IN (?);",
-          cmsChanges
-        )
-        .then(() => {
-          return "Данные обновлены";
-        });
+        connection.beginTransaction();
+        // cmsChanges.forEach(async (row) => {
+        //   try {
+        //     await connection.query(
+        //       "UPDATE cms_data SET content = ? WHERE sectidon = ?",
+        //       row
+        //     );
+        //   } catch (err) {
+        //     console.error(err);
+        //   }
+        // });
 
-      // ==============
+        for await (const change of cmsChanges) {
+          // console.log(change);
 
-      // new Promise((res, rej) => {
-      //   db.run(
-      //     "UPDATE cms_data1 SET content=? WHERE section=?",
-      //     [cmsChanges[1], cmsChanges[0]],
-      //     (err) => {
-      //       if (err) {
-      //         isError = true;
+          try {
+            await connection.query(
+              "UPDATE cms_data SET content = ? WHERE EXISTS (section = ?)",
+              change
+            );
+          } catch (err) {
+            console.error(err);
 
-      //         console.log(isError);
-      //         rej(new ApiError(500, err.message));
-      //       }
-      //       res();
-      //     }
-      //   );
-      // }).catch((err) => {
-      //   console.log(err.message);
-      // });
+            break;
+          }
+        }
 
-      // console.log([cmsChanges[0], cmsChanges[1]]);
-    } catch (err) {
-      console.error(err);
+        connection.release();
+        // await pool.query(
+        //   "UPDATE cms_data SET content = ? WHERE section = ?",
+        //   cmsChanges[0]
+        // );
+
+        // await pool.query(
+        //   "UPDATE cms_data SET content = ? WHERE section = ?",
+        //   cmsChanges[1]
+        // );
+
+        // await pool.query(
+        //   "UPDATE cms_data SET content = ? WHERE section = ?",
+        //   cmsChanges[2]
+        // );
+
+        await connection.commit();
+      } catch (err) {
+        // await connection.rollback();
+        console.error(err);
+      }
     }
+
+    // ==============
+
+    // new Promise((res, rej) => {
+    //   db.run(
+    //     "UPDATE cms_data1 SET content=? WHERE section=?",
+    //     [cmsChanges[1], cmsChanges[0]],
+    //     (err) => {
+    //       if (err) {
+    //         isError = true;
+
+    //         console.log(isError);
+    //         rej(new ApiError(500, err.message));
+    //       }
+    //       res();
+    //     }
+    //   );
+    // }).catch((err) => {
+    //   console.log(err.message);
+    // });
+
+    // console.log([cmsChanges[0], cmsChanges[1]]);
+    // } catch (err) {
+    //   console.error(err);
+    // }
     // if(isError) rej()
 
     // [
@@ -243,6 +278,8 @@ class Content {
 
     return result;
   }
+
+  static async dbErrorHandler(error) {}
 
   // static test() {
   //   try {
