@@ -3,7 +3,7 @@ const { get } = require("../routes/authRoute");
 const ApiError = require("./Error");
 
 const dbPoolConfig = {
-  connectionLimit: 30,
+  connectionLimit: 1,
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   database: process.env.MYSQL_DATABASE,
@@ -177,66 +177,113 @@ class Content {
   }
 
   static async updateCmsData(data) {
-    // const cmsChanges = data;
-    const cmsChanges = [
-      ["+7 (931) 432-55-44", "telephone"],
-      ["г. Выборг, ул. Кривоносова, д. 13, офис 231", "adress"],
-      ["medved-vyborg@yandex.ru", "email"],
-    ];
+    const cmsChanges = data;
+    // const cmsChanges = [
+    //   ["aaa +7 (931) 432-55-44", "telephone"],
+    //   ["г. Выборг, ул. Кривоносова, д. 13, офис 231", "adress1"],
+    //   ["medved-vyborg@yandex.ru", "email"],
+    // ];
+
     // console.log(cmsChanges);
-    if (cmsChanges.length > 1) {
-      try {
-        const connection = await pool.getConnection();
 
-        connection.beginTransaction();
-        // cmsChanges.forEach(async (row) => {
-        //   try {
-        //     await connection.query(
-        //       "UPDATE cms_data SET content = ? WHERE sectidon = ?",
-        //       row
-        //     );
-        //   } catch (err) {
-        //     console.error(err);
-        //   }
-        // });
+    async function promiseRequest() {
+      const start = performance.now();
 
-        for await (const change of cmsChanges) {
-          // console.log(change);
+      const promises = [];
 
-          try {
-            await connection.query(
-              "UPDATE cms_data SET content = ? WHERE EXISTS (section = ?)",
-              change
-            );
-          } catch (err) {
-            console.error(err);
+      if (cmsChanges.length > 1) {
+        // Исправлено: добавлена закрывающая фигурная скобка в конце блока
+        const connection = mysql
+          .createConnection(dbConnectionlConfig)
+          .promise();
 
-            break;
-          }
+        cmsChanges.forEach((elem) => {
+          const promise = new Promise((res, rej) => {
+            try {
+              async function request() {
+                const [data] = await connection.query(
+                  "UPDATE cms_data SET content = ? WHERE section = ?",
+                  [elem[1], elem[0]]
+                );
+
+                if (data.affectedRows === 0) {
+                  rej(new Error("Такой строки нет в таблице..."));
+                } else {
+                  res();
+                }
+              }
+
+              request();
+            } catch (err) {
+              // rej(err);
+            }
+          });
+
+          promises.push(promise);
+        });
+
+        await connection.beginTransaction();
+
+        try {
+          await Promise.all(promises)
+            .then(async () => {
+              await connection.commit();
+            })
+            .catch((err) => {
+              console.log(err);
+              connection.rollback();
+            });
+        } catch (err) {
+          console.log(err);
+          connection.rollback();
+        } finally {
+          connection.release();
+
+          const end = performance.now();
+          const time = end - start;
+          console.log("Время: ", time);
         }
-
-        connection.release();
-        // await pool.query(
-        //   "UPDATE cms_data SET content = ? WHERE section = ?",
-        //   cmsChanges[0]
-        // );
-
-        // await pool.query(
-        //   "UPDATE cms_data SET content = ? WHERE section = ?",
-        //   cmsChanges[1]
-        // );
-
-        // await pool.query(
-        //   "UPDATE cms_data SET content = ? WHERE section = ?",
-        //   cmsChanges[2]
-        // );
-
-        await connection.commit();
-      } catch (err) {
-        // await connection.rollback();
-        console.error(err);
       }
     }
+
+    // Исправлено: добавлен обработчик необработанных отклонений обещаний
+    promiseRequest().catch((err) => {
+      console.error("Необработанное отклонение обещания:", err);
+    });
+
+    // connection.release();
+    // const start = new Date().getTime();
+
+    // for await (const change of cmsChanges) {
+    //   try {
+    //     const [data] = await connection.query(
+    //       "UPDATE cms_data SET content = ? WHERE section = ?",
+    //       [change[1], change[0]]
+    //     );
+
+    //     if (data.affectedRows === 0) {
+    //       connection.rollback();
+    //       break;
+    //     }
+    //   } catch (err) {
+    //     console.error(err);
+
+    //     break;
+    //   }
+    // }
+
+    // const end = performance.now();
+    // const end = new Date().getTime();
+    // const time = end - start;
+    // console.log("Время: ", time);
+
+    // console.log("Начало: ", start, "Конец: ", end);
+
+    // console.timeEnd("func");
+
+    // connection.release();
+
+    // await connection.commit();
 
     // ==============
 
