@@ -192,64 +192,62 @@ class Content {
       const promises = [];
 
       if (cmsChanges.length > 1) {
-        // Исправлено: добавлена закрывающая фигурная скобка в конце блока
-        const connection = mysql
-          .createConnection(dbConnectionlConfig)
-          .promise();
+        const connection = await pool.getConnection();
 
         cmsChanges.forEach((elem) => {
-          const promise = new Promise((res, rej) => {
-            try {
-              async function request() {
-                const [data] = await connection.query(
-                  "UPDATE cms_data SET content = ? WHERE section = ?",
-                  [elem[1], elem[0]]
-                );
+          // const request = async () => {
+          //   const [data] = await connection.query(
+          //     "UPDATE cms_data SET content = ? WHERE section = ?",
+          //     [elem[1], elem[0]]
+          //   );
 
+          //   if (data.affectedRows === 0) {
+          //     throw new Error("Такой строки нет в таблице...");
+          //   }
+          // };
+
+          const request = async () => {
+            return connection
+              .query("UPDATE cms_data SET content = ? WHERE section = ?", [
+                elem[1],
+                elem[0],
+              ])
+              .then(([data]) => {
                 if (data.affectedRows === 0) {
-                  rej(new Error("Такой строки нет в таблице..."));
-                } else {
-                  res();
+                  throw new Error("Такой строки нет в таблице...");
                 }
-              }
+              });
+          };
 
-              request();
-            } catch (err) {
-              // rej(err);
-            }
-          });
-
-          promises.push(promise);
+          promises.push(request);
         });
 
         await connection.beginTransaction();
 
-        try {
-          await Promise.all(promises)
-            .then(async () => {
-              await connection.commit();
-            })
-            .catch((err) => {
-              console.log(err);
-              connection.rollback();
-            });
-        } catch (err) {
-          console.log(err);
-          connection.rollback();
-        } finally {
-          connection.release();
+        await Promise.all(promises.map((p) => p()))
+          .then(async () => {
+            await connection.commit();
+          })
+          .catch(async (err) => {
+            console.error(err);
 
-          const end = performance.now();
-          const time = end - start;
-          console.log("Время: ", time);
-        }
+            await connection.rollback();
+          })
+          .finally(() => {
+            connection.release();
+
+            const end = performance.now();
+            const time = end - start;
+            console.log("Время: ", time);
+          });
       }
     }
 
+    promiseRequest();
     // Исправлено: добавлен обработчик необработанных отклонений обещаний
-    promiseRequest().catch((err) => {
-      console.error("Необработанное отклонение обещания:", err);
-    });
+    // promiseRequest().catch((err) => {
+    //   console.error("Необработанное отклонение обещания:", err);
+    // });
 
     // connection.release();
     // const start = new Date().getTime();
