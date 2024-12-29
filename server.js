@@ -22,11 +22,14 @@ let cmsContent = null;
 // }, 1000);
 
 setInterval(async () => {
-  let DBChanges = require("./controllers/adminController").DBChanges;
+  cmsContent = await Content.getPageContentSortedByPage();
+}, 1000);
+// setInterval(async () => {
+//   let DBChanges = require("./controllers/adminController").DBChanges;
 
-  if (DBChanges && DBChanges.isChanged && DBChanges.changes.length !== 0) {
-  }
-}, 2500);
+//   if (DBChanges && DBChanges.isChanged && DBChanges.changes.length !== 0) {
+//   }
+// }, 2500);
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -53,22 +56,33 @@ app.get("/test", async (req, res, next) => {
 });
 
 app.get("/test2", async (req, res) => {
-  const result = await Content.requestToDB(
-    // "UPDATE cms_data SET content='новый контент' WHERE section='wood3' "
-    "SELECT * FROM cms_data"
-  );
+  const result = await Content.getPageContentSortedByPage();
 
   res.json(result);
 });
 
-app.get("/test3", async (req, res) => {
-  const result = Content.requestToDB2(
-    // "UPDATE cms_data SET content='новый контент' WHERE section='wood3' "
-    "SELECT * FROM cms_data"
-  );
-
-  res.json(result);
+app.get("/test4", (req, res) => {
+  res.render("./test");
 });
+
+app.post("/test4", (req, res) => {
+  try {
+    const data = req.body;
+
+    console.log(data);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+// app.get("/test3", async (req, res) => {
+//   const result = Content.requestToDB2(
+//     // "UPDATE cms_data SET content='новый контент' WHERE section='wood3' "
+//     "SELECT * FROM cms_data"
+//   );
+
+//   res.json(result);
+// });
 
 app.get("/", authMiddleware, async (req, res, next) => {
   try {
@@ -85,9 +99,6 @@ app.get("/catalog", authMiddleware, async (req, res, next) => {
   try {
     const products = await Content.getProducts();
 
-    //     setTimeout(()=>{
-    // console.log(products);
-    // }, 1000);
     res.render("./pages/catalog", {
       content: cmsContent.catalog,
       products,
@@ -120,25 +131,28 @@ app.use((req, res) => {
   res.render("error", { err: 404, message: "Такой страницы не существует" });
 });
 
-const server = app.listen(PORT, HOST, () => {
-  // new Promise(async (res, rej) => {
-  //   cmsContent = await Content.getPageContentSortedByPage();
+const server = (function () {
+  new Promise(async (res, rej) => {
+    cmsContent = await Content.getPageContentSortedByPage();
 
-  //   if (cmsContent instanceof Error) return rej(cmsContent);
-  //   else {
-  //     console.log("Pages content was successfully loaded from datebase");
-  //     return res(cmsContent);
-  //   }
-  // })
-  //   .catch((err) => {
-  //     console.log(err);
-  //     return process.exit();
-  //   })
-  //   .then(() => {
-  //     return console.log(`Server is running on port ${PORT}`);
-  //   });
-  console.log(`Server is running on port ${PORT}`);
-});
+    if (cmsContent instanceof Error) rej(cmsContent);
+    else {
+      console.log("Pages content was successfully loaded from datebase");
+      // res(cmsContent);
+      res();
+    }
+  })
+    .then(() => {
+      app.listen(PORT, HOST, () => {
+        console.log(`Server is running on port ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+
+      return process.exit();
+    });
+})();
 
 process.on("SIGINT", () => {
   console.log("SIGINT signal received.");

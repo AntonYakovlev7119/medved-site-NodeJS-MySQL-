@@ -37,10 +37,7 @@ class Admin {
   }
 
   static getCmsListContent(req, res, next) {
-    setTimeout(() => {
-      return res.json(cmsContent);
-    }, 1000);
-    // return res.json(cmsContent);
+    return res.json(cmsContent);
   }
 
   static async saveCmsChanges(req, res, next) {
@@ -50,34 +47,27 @@ class Admin {
     try {
       const dbRequest = await Content.updateCmsData(cmsContentChanges);
 
-      if (dbRequest instanceof Error) {
-        throw dbRequest;
-      } else {
-        // cmsContent = await Content.getAllPagesContent();
-      }
+      cmsContent = await Content.getAllPagesContent();
 
-      return res.json(dbRequest);
+      return res.status(200).json(dbRequest);
     } catch (err) {
-      return res.status(500).json();
+      return res.status(err.status).json(err);
     }
   }
 
   static async getСatalogPage(req, res, next) {
     try {
+      const product_id = req.query.product_id;
+
       products = await Content.getProducts();
 
-      function getProducts() {
-        const product_id = req.query.product_id;
-        if (product_id) {
-          products.forEach((elem) => {
-            if (elem.id == product_id) {
-              return res.json(elem);
-            }
-          });
-        }
+      if (product_id) {
+        products.forEach((elem) => {
+          if (elem.id == product_id) {
+            return res.json(elem);
+          }
+        });
       }
-
-      getProducts();
 
       return res.render("admin", { req, products });
     } catch (err) {

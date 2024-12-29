@@ -3,21 +3,22 @@ const { get } = require("../routes/authRoute");
 const ApiError = require("./Error");
 
 const dbPoolConfig = {
-  connectionLimit: 1,
+  connectionLimit: 20,
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   database: process.env.MYSQL_DATABASE,
   password: process.env.MYSQL_PASSWORD,
 };
 
-const dbConnectionlConfig = {
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  database: process.env.MYSQL_DATABASE,
-  password: process.env.MYSQL_PASSWORD,
-};
+// const dbConnectionlConfig = {
+//   host: process.env.MYSQL_HOST,
+//   user: process.env.MYSQL_USER,
+//   database: process.env.MYSQL_DATABASE,
+//   password: process.env.MYSQL_PASSWORD,
+// };
 
-const pool = mysql.createPool(dbPoolConfig).promise();
+const pool = mysql.createPool(dbPoolConfig);
+const promisePool = pool.promise();
 
 class Content {
   // static getPageContentSortedByPage() {
@@ -47,59 +48,75 @@ class Content {
 
   static async getPageContentSortedByPage() {
     try {
-      const content = {};
+      const data = await Content.requestToDB(
+        "SELECT page, section, content FROM cms_data",
+        null,
+        ([data]) => {
+          const content = {};
 
-      db.all("SELECT page, section, content FROM cms_data", (err, data) => {
-        if (err) rej(err);
-        data.forEach((elem) => {
-          if (content.hasOwnProperty(elem.page)) {
-            content[elem.page][elem.section] = elem.content;
-          } else {
-            content[elem.page] = {
-              [elem.section]: elem.content,
-            };
-          }
-        });
-        res(content);
-      });
+          data.forEach((elem) => {
+            if (content.hasOwnProperty(elem.page)) {
+              content[elem.page][elem.section] = elem.content;
+            } else {
+              content[elem.page] = {
+                [elem.section]: elem.content,
+              };
+            }
+          });
+
+          return content;
+        }
+      );
+      // .catch((err) => {
+      //   console.log(err);
+      // });
+
+      return data;
     } catch (err) {
-      return ApiError.badRequest(
+      // console.log("Не удалось получить данные страницы из базы данных");
+      // console.error(err);
+
+      return ApiError.internalError(
         "Не удалось получить данные страницы из базы данных"
       );
     }
   }
 
   static async getAllPagesContent() {
-    const getData = new Promise((res, rej) => {
-      const content = {};
-      db.all("SELECT * FROM cms_data", (err, data) => {
-        if (err) return rej(err);
-        data.forEach((elem) => {
-          content[elem.section] = {
-            title: elem.name,
-            content: elem.content,
-          };
-        });
-        // console.log(content);
-        return res(content);
-      });
-    }).catch((err) => {
+    try {
+      const data = await Content.requestToDB(
+        "SELECT * FROM cms_data",
+        null,
+        ([data]) => {
+          const content = {};
+
+          data.forEach((elem) => {
+            content[elem.section] = {
+              title: elem.name,
+              content: elem.content,
+            };
+          });
+
+          return content;
+        }
+      );
+
+      return data;
+    } catch (err) {
       return ApiError.internalError(
         "Не удалось получить данные страницы из базы данных"
       );
-    });
-
-    return getData;
+    }
   }
 
-  static getProducts() {
+  static async getProducts() {
     try {
-      // const error = new Error("УУУУУУпс!");
+      const data = await Content.requestToDB(
+        "SELECT * FROM products",
+        null,
+        ([data]) => {
+          const products = [];
 
-      // return rej(error);
-      return new Promise((res, rej) => {
-        const products = [];
-        db.all("SELECT * FROM products", (err, data) => {
           data.forEach((elem) => {
             products.push({
               id: elem.id,
@@ -109,9 +126,12 @@ class Content {
               img: elem.img,
             });
           });
-          res(products);
-        });
-      });
+
+          return products;
+        }
+      );
+
+      return data;
     } catch (err) {
       return ApiError.badRequest(
         "Не удалось получить данные продукции из базы данных"
@@ -178,164 +198,91 @@ class Content {
 
   static async updateCmsData(data) {
     const cmsChanges = data;
-    // const cmsChanges = [
-    //   ["aaa +7 (931) 432-55-44", "telephone"],
-    //   ["г. Выборг, ул. Кривоносова, д. 13, офис 231", "adress1"],
-    //   ["medved-vyborg@yandex.ru", "email"],
-    // ];
 
-    // console.log(cmsChanges);
+    const connection = await promisePool.getConnection();
 
-    async function promiseRequest() {
-      const start = performance.now();
+    connection.beginTransaction();
 
+    return Promise.all(createPromises())
+      .then(() => {
+        connection.commit();
+        connection.release();
+
+        return "Изменения упешно применены";
+      })
+      .catch((err) => {
+        connection.rollback();
+        connection.release();
+
+        throw new ApiError(err.status, err.message);
+      });
+
+    function createPromises() {
       const promises = [];
 
-      if (cmsChanges.length > 1) {
-        const connection = await pool.getConnection();
+      cmsChanges.forEach((change) => {
+        const promise = new Promise(async (res, rej) => {
+          const result = await Content.requestToDB(
+            "UPDATE cms_data SET content = ? WHERE section = ?",
+            [change[1], change[0]],
+            ([data]) => {
+              if (data.affectedRows === 0) {
+                rej({
+                  status: 401,
+                  message: `Таких данных не существует: {${change[0]}: ${change[1]}}`,
+                });
+              }
+              res();
+            },
+            connection
+          );
 
-        cmsChanges.forEach((elem) => {
-          // const request = async () => {
-          //   const [data] = await connection.query(
-          //     "UPDATE cms_data SET content = ? WHERE section = ?",
-          //     [elem[1], elem[0]]
-          //   );
-
-          //   if (data.affectedRows === 0) {
-          //     throw new Error("Такой строки нет в таблице...");
-          //   }
-          // };
-
-          const request = async () => {
-            return connection
-              .query("UPDATE cms_data SET content = ? WHERE section = ?", [
-                elem[1],
-                elem[0],
-              ])
-              .then(([data]) => {
-                if (data.affectedRows === 0) {
-                  throw new Error("Такой строки нет в таблице...");
-                }
-              });
-          };
-
-          promises.push(request);
+          if (result?.error)
+            rej({ status: 500, message: "Не удалось загрузить изменения..." });
         });
 
-        await connection.beginTransaction();
+        promises.push(promise);
+      });
 
-        await Promise.all(promises.map((p) => p()))
-          .then(async () => {
-            await connection.commit();
-          })
-          .catch(async (err) => {
-            console.error(err);
-
-            await connection.rollback();
-          })
-          .finally(() => {
-            connection.release();
-
-            const end = performance.now();
-            const time = end - start;
-            console.log("Время: ", time);
-          });
-      }
+      return promises;
     }
-
-    promiseRequest();
-    // Исправлено: добавлен обработчик необработанных отклонений обещаний
-    // promiseRequest().catch((err) => {
-    //   console.error("Необработанное отклонение обещания:", err);
-    // });
-
-    // connection.release();
-    // const start = new Date().getTime();
-
-    // for await (const change of cmsChanges) {
-    //   try {
-    //     const [data] = await connection.query(
-    //       "UPDATE cms_data SET content = ? WHERE section = ?",
-    //       [change[1], change[0]]
-    //     );
-
-    //     if (data.affectedRows === 0) {
-    //       connection.rollback();
-    //       break;
-    //     }
-    //   } catch (err) {
-    //     console.error(err);
-
-    //     break;
-    //   }
-    // }
-
-    // const end = performance.now();
-    // const end = new Date().getTime();
-    // const time = end - start;
-    // console.log("Время: ", time);
-
-    // console.log("Начало: ", start, "Конец: ", end);
-
-    // console.timeEnd("func");
-
-    // connection.release();
-
-    // await connection.commit();
-
-    // ==============
-
-    // new Promise((res, rej) => {
-    //   db.run(
-    //     "UPDATE cms_data1 SET content=? WHERE section=?",
-    //     [cmsChanges[1], cmsChanges[0]],
-    //     (err) => {
-    //       if (err) {
-    //         isError = true;
-
-    //         console.log(isError);
-    //         rej(new ApiError(500, err.message));
-    //       }
-    //       res();
-    //     }
-    //   );
-    // }).catch((err) => {
-    //   console.log(err.message);
-    // });
-
-    // console.log([cmsChanges[0], cmsChanges[1]]);
-    // } catch (err) {
-    //   console.error(err);
-    // }
-    // if(isError) rej()
-
-    // [
-    //   {
-    //     $section: "header_desc",
-    //     $content:
-    //       "Доставка дров, древесных изделий, перевозка грузов, расчистка участков от древесных насаждений fdfdfdf",
-    //   },
-    //   { $section: "email", $content: "medved-vyborg@yandex.rudfdf" },],
   }
 
-  static async requestToDB(sql, dbAction) {
-    const [result] = await pool.query(sql);
-
-    return result;
+  static async requestToDB(sql, data, dbAction, connection) {
+    if (!connection) {
+      return promisePool
+        .query(sql, data)
+        .then((result) => {
+          if (dbAction) {
+            return dbAction(result);
+          } else {
+            return result;
+          }
+        })
+        .catch((err) => {
+          return Content.dbErrorHandler(err);
+        });
+    } else {
+      return connection
+        .query(sql, data)
+        .then((result) => {
+          if (dbAction) {
+            return dbAction(result);
+          } else {
+            return result;
+          }
+        })
+        .catch((err) => {
+          return Content.dbErrorHandler(err);
+        });
+    }
   }
 
-  static async dbErrorHandler(error) {}
+  static dbErrorHandler(error) {
+    // console.error(error);
 
-  // static test() {
-  //   try {
-  //   } catch (err) {
-  //     next(
-  //       ApiError.badRequest(
-  //         "Не получилось получить данные продукции из базы данных"
-  //       )
-  //     );
-  //   }
-  // }
+    return { error: true };
+  }
 }
 
 module.exports = Content;

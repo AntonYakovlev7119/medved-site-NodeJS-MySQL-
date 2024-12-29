@@ -73,8 +73,7 @@ async function submitChanges() {
 
   await fetch("/admin/cms_data_update", options)
     .then((res) => {
-      if (res.status !== 200)
-        throw new Error("Не удалось загрузить изменения...");
+      if (!res.ok) throw new Error("Не удалось загрузить изменения...");
       else {
         return res.json();
       }
@@ -82,7 +81,6 @@ async function submitChanges() {
     .catch((err) => {
       console.error(err);
     });
-  // .then((data) => console.log(data, "21"));
 }
 
 function formContentChanged() {
