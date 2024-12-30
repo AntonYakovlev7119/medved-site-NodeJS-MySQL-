@@ -16,6 +16,7 @@ const ApiError = require("./models/Error");
 const Content = require("./models/Content");
 
 let cmsContent = null;
+let products = null;
 
 // setTimeout(()=>{
 // console.log(cmsContent.index);
@@ -23,6 +24,7 @@ let cmsContent = null;
 
 setInterval(async () => {
   cmsContent = await Content.getPageContentSortedByPage();
+  products = await Content.getProducts();
 }, 1000);
 // setInterval(async () => {
 //   let DBChanges = require("./controllers/adminController").DBChanges;
@@ -97,8 +99,6 @@ app.get("/", authMiddleware, async (req, res, next) => {
 
 app.get("/catalog", authMiddleware, async (req, res, next) => {
   try {
-    const products = await Content.getProducts();
-
     res.render("./pages/catalog", {
       content: cmsContent.catalog,
       products,
@@ -131,28 +131,26 @@ app.use((req, res) => {
   res.render("error", { err: 404, message: "Такой страницы не существует" });
 });
 
-const server = (function () {
-  new Promise(async (res, rej) => {
+const server = (async function () {
+  try {
     cmsContent = await Content.getPageContentSortedByPage();
+    console.log("1.Pages content was successfully loaded from datebase");
 
-    if (cmsContent instanceof Error) rej(cmsContent);
-    else {
-      console.log("Pages content was successfully loaded from datebase");
-      // res(cmsContent);
-      res();
-    }
-  })
-    .then(() => {
-      app.listen(PORT, HOST, () => {
-        console.log(`Server is running on port ${PORT}`);
-      });
-    })
-    .catch((err) => {
-      console.log(err);
+    products = await Content.getProducts();
+    console.log("2.Products were successfully loaded from datebase");
 
-      return process.exit();
+    return app.listen(PORT, HOST, () => {
+      console.log(`Server is running on port ${PORT}`);
     });
+  } catch (err) {
+    console.log(err);
+    return process.exit();
+  }
 })();
+
+server.then((s) => {
+  return s;
+});
 
 process.on("SIGINT", () => {
   console.log("SIGINT signal received.");

@@ -47,39 +47,44 @@ class Content {
   // }
 
   static async getPageContentSortedByPage() {
-    try {
-      const data = await Content.requestToDB(
-        "SELECT page, section, content FROM cms_data",
-        null,
-        ([data]) => {
-          const content = {};
+    // try {
+    const data = await Content.requestToDB(
+      "SELECT page, section, content FROM cms_data",
+      null,
+      ([data]) => {
+        const content = {};
 
-          data.forEach((elem) => {
-            if (content.hasOwnProperty(elem.page)) {
-              content[elem.page][elem.section] = elem.content;
-            } else {
-              content[elem.page] = {
-                [elem.section]: elem.content,
-              };
-            }
-          });
+        data.forEach((elem) => {
+          if (content.hasOwnProperty(elem.page)) {
+            content[elem.page][elem.section] = elem.content;
+          } else {
+            content[elem.page] = {
+              [elem.section]: elem.content,
+            };
+          }
+        });
 
-          return content;
-        }
-      );
-      // .catch((err) => {
-      //   console.log(err);
-      // });
+        return content;
+      }
+    );
 
-      return data;
-    } catch (err) {
-      // console.log("Не удалось получить данные страницы из базы данных");
-      // console.error(err);
-
-      return ApiError.internalError(
+    if (data.isError) {
+      throw ApiError.internalError(
         "Не удалось получить данные страницы из базы данных"
       );
+    } else {
+      return data;
     }
+
+    // return data;
+    // } catch (err) {
+    //   // console.log("Не удалось получить данные страницы из базы данных");
+    //   // console.error(err);
+
+    //   throw ApiError.internalError(
+    //     "Не удалось получить данные страницы из базы данных"
+    //   );
+    // }
   }
 
   static async getAllPagesContent() {
@@ -110,33 +115,38 @@ class Content {
   }
 
   static async getProducts() {
-    try {
-      const data = await Content.requestToDB(
-        "SELECT * FROM products",
-        null,
-        ([data]) => {
-          const products = [];
+    // try {
+    const data = await Content.requestToDB(
+      "SELECT * FROM products",
+      null,
+      ([data]) => {
+        const products = [];
 
-          data.forEach((elem) => {
-            products.push({
-              id: elem.id,
-              title: elem.title,
-              desc: elem.description,
-              price: elem.price,
-              img: elem.img,
-            });
+        data.forEach((elem) => {
+          products.push({
+            id: elem.id,
+            title: elem.title,
+            desc: elem.description,
+            price: elem.price,
+            img: elem.img,
           });
+        });
 
-          return products;
-        }
-      );
+        return products;
+      }
+    );
 
-      return data;
-    } catch (err) {
-      return ApiError.badRequest(
+    if (data.isError)
+      throw ApiError.internalError(
         "Не удалось получить данные продукции из базы данных"
       );
-    }
+
+    return data;
+    // } catch (err) {
+    //   return ApiError.badRequest(
+    //     "Не удалось получить данные продукции из базы данных"
+    //   );
+    // }
   }
 
   static getAllOrders() {
@@ -227,18 +237,25 @@ class Content {
             [change[1], change[0]],
             ([data]) => {
               if (data.affectedRows === 0) {
-                rej({
+                console.log(data);
+                Content.dbErrorHandler({
                   status: 401,
                   message: `Таких данных не существует: {${change[0]}: ${change[1]}}`,
                 });
+
+                rej({
+                  status: 401,
+                  message: `Таких данных не существует`,
+                });
+              } else {
+                res();
               }
-              res();
             },
             connection
           );
 
-          if (result?.error)
-            rej({ status: 500, message: "Не удалось загрузить изменения..." });
+          if (result?.isError)
+            rej({ status: 500, message: "Не удалось загрузить изменения" });
         });
 
         promises.push(promise);
@@ -279,9 +296,9 @@ class Content {
   }
 
   static dbErrorHandler(error) {
-    // console.error(error);
+    console.error(error);
 
-    return { error: true };
+    return { isError: true };
   }
 }
 

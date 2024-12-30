@@ -79,7 +79,7 @@ async function submitChanges() {
       }
     })
     .catch((err) => {
-      console.error(err);
+      // console.error(err);
     });
 }
 
