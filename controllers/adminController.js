@@ -87,68 +87,64 @@ class Admin {
 
   static signOut(req, res) {
     res.clearCookie("jwt");
+
     return res.redirect("/login");
   }
 
   static async createProduct(req, res, next) {
-    try {
-      const product_title = req.body.product__name;
-      const product_desc = req.body.product__description;
-      const product_price = req.body.product__price;
-      let product_img = req.file;
+    const product_title = req.body.product__name;
+    const product_desc = req.body.product__description;
+    const product_price = req.body.product__price;
+    let product_img = req.file;
 
-      if (!product_img) {
-        product_img = "no_img.jpg";
-      } else {
-        product_img = product_img.filename;
-      }
-
-      db.run(
-        "INSERT INTO products (title, description, price, img) VALUES (?,?,?,?)",
-        product_title,
-        product_desc,
-        product_price,
-        product_img
-      );
-
-      res.redirect("/admin/catalog_management");
-    } catch (err) {
-      return next(new ApiError(err.status, err.message));
+    if (!product_img) {
+      product_img = "no_img.jpg";
+    } else {
+      product_img = product_img.filename;
     }
+
+    await Content.requestToDB(
+      "INSERT INTO products (title, description, price, img) VALUES (?,?,?,?)",
+      [product_title, product_desc, product_price, product_img]
+    )
+      .then(() => res.redirect("/admin/catalog_management"))
+      .catch((err) => {
+        return next(new ApiError(err.status, err.message));
+      });
   }
 
   static async editProduct(req, res, next) {
-    try {
-      const product_id = req.params.id;
-      const product_title = req.body.product__name;
-      const product_desc = req.body.product__description;
-      const product_price = req.body.product__price;
-      let product_img_file = req.file;
+    const product_id = req.params.id;
+    const product_title = req.body.product__name;
+    const product_desc = req.body.product__description;
+    const product_price = req.body.product__price;
+    let product_img_file = req.file;
 
+    new Promise(async (res, rej) => {
       if (!product_img_file) {
-        db.run(
+        await Content.requestToDB(
           "UPDATE products SET title=?, description=?, price=? WHERE id=?",
-          product_title,
-          product_desc,
-          product_price,
-          product_id
+          [product_title, product_desc, product_price, product_id]
         );
       } else {
         product_img_file = product_img_file.filename;
-        db.run(
+        await Content.requestToDB(
           "UPDATE products SET title=?, description=?, price=?, img=? WHERE id=?",
-          product_title,
-          product_desc,
-          product_price,
-          product_img_file,
-          product_id
+          [
+            product_title,
+            product_desc,
+            product_price,
+            product_img_file,
+            product_id,
+          ]
         );
       }
+    })
+      .then(() => res.redirect("/admin/catalog_management"))
 
-      res.redirect("/admin/catalog_management");
-    } catch (err) {
-      return next(new ApiError(err.status, err.message));
-    }
+      .catch((err) => {
+        return next(new ApiError(err.status, err.message));
+      });
   }
 
   static async deleteProduct(req, res, next) {

@@ -112,7 +112,7 @@ app.get("/catalog", authMiddleware, async (req, res, next) => {
 app.get("/contacts", authMiddleware, async (req, res, next) => {
   try {
     res.render("./pages/contacts", {
-      content: cmsContent.catalog,
+      content: cmsContent.contacts,
       req,
     });
   } catch (err) {
@@ -147,10 +147,6 @@ const server = (async function () {
     return process.exit();
   }
 })();
-
-server.then((s) => {
-  return s;
-});
 
 process.on("SIGINT", () => {
   console.log("SIGINT signal received.");
