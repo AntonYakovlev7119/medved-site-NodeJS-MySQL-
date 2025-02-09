@@ -21,9 +21,9 @@ class ApiError extends Error {
   //   return new ApiError(status, message);
   // }
 
-  get genericError() {
-    return { status: this._status, message: this._message };
-  }
+  // get genericError() {
+  //   return { status: this._status, message: this._message };
+  // }
 }
 
 module.exports = ApiError;

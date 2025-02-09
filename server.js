@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const cookieParser = require("cookie-parser");
+const favicon = require("serve-favicon");
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || "localhost";
 
@@ -13,19 +14,16 @@ const errorHandler = require("./middleware/errorHandler");
 const authMiddleware = require("./middleware/authMiddleware");
 
 const ApiError = require("./models/Error");
-const Content = require("./models/Content");
+const { Content, pool } = require("./models/Content");
 
 let cmsContent = null;
 let products = null;
 
-// setTimeout(()=>{
-// console.log(cmsContent.index);
-// }, 1000);
-
 setInterval(async () => {
   cmsContent = await Content.getPageContentSortedByPage();
   products = await Content.getProducts();
-}, 1000);
+}, 5000);
+
 // setInterval(async () => {
 //   let DBChanges = require("./controllers/adminController").DBChanges;
 
@@ -40,6 +38,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
+app.use(favicon(path.join("public", "./img/logo/favicon.ico")));
 
 app.get("/test", async (req, res, next) => {
   try {
@@ -131,19 +130,25 @@ app.use((req, res) => {
   res.render("error", { err: 404, message: "Такой страницы не существует" });
 });
 
-const server = (async function () {
+let server;
+
+(async function () {
   try {
     cmsContent = await Content.getPageContentSortedByPage();
     console.log("1.Pages content was successfully loaded from datebase");
 
+    // setTimeout(() => {
+    // products = require("./controllers/adminController").products;
+    // console.log(products);
+    // }, 2000);
     products = await Content.getProducts();
     console.log("2.Products were successfully loaded from datebase");
 
-    return app.listen(PORT, HOST, () => {
+    server = app.listen(PORT, HOST, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return process.exit();
   }
 })();
@@ -153,6 +158,10 @@ process.on("SIGINT", () => {
 
   server.close(() => {
     console.log("Closed out remaining connections");
+
+    pool.end((err) => {
+      console.log("Database connections are closed");
+    });
 
     process.exit();
   });

@@ -1,7 +1,5 @@
 // ============= Админ панель/управление содержимым страниц =============
 
-// const { body } = require("express-validator");
-
 const sectionSelect = document.querySelector("#section_select");
 const cmsForm = document.querySelector("form.cms_managment");
 const sectionTitle = document.querySelector("h2.title");
@@ -75,6 +73,9 @@ async function submitChanges() {
     .then((res) => {
       if (!res.ok) throw new Error("Не удалось загрузить изменения...");
       else {
+        cmsDataChanges = {};
+        alert("Изменения применены");
+
         return res.json();
       }
     })

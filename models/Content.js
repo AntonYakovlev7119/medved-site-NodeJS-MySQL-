@@ -221,7 +221,9 @@ class Content {
           }
         })
         .catch((err) => {
-          return Content.dbErrorHandler(err);
+          Content.dbErrorHandler(err);
+
+          throw new Error();
         });
     } else {
       return connection
@@ -246,4 +248,4 @@ class Content {
   }
 }
 
-module.exports = Content;
+module.exports = { Content, pool };

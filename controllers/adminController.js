@@ -1,38 +1,25 @@
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("medvedDB.db");
 const fs = require("fs");
-const Content = require("../models/Content");
+const { Content } = require("../models/Content");
 const ApiError = require("../models/Error");
 
-let content = null;
+let cmsContent = null;
 let products = [];
 let orders = [];
-let DBChanges = {
-  isChanged: false,
-  changes: [],
-};
-let cmsContent = null;
 
-// Content.getAllPagesContent().then((data) => {
-//   return (cmsContent = data);
-// });
 (async function () {
-  cmsContent = await Content.getAllPagesContent();
+  // cmsContent = await Content.getAllPagesContent();
+  // products = await Content.getProducts();
+  // exports.products = await Content.getProducts();
 })();
 
-// getDataFromDateBase();
-//  DBChanges.isChanged =true;
-//         module.exports.DBChanges = DBChanges;
-//         console.log(module);
-//         setTimeout(()=>DBChanges.isChanged = false, 5000)
-
 class Admin {
-  static getCmsPage(req, res, next) {
+  static getCmsPage(req, res) {
     try {
       return res.render("admin", { req });
     } catch (err) {
-      err.status = 500;
-      return next(new ApiError(err.status, err.message));
+      return next(new ApiError(500, err.message));
     }
   }
 
@@ -58,8 +45,6 @@ class Admin {
   static async getСatalogPage(req, res, next) {
     try {
       const product_id = req.query.product_id;
-
-      products = await Content.getProducts();
 
       if (product_id) {
         products.forEach((elem) => {
@@ -164,4 +149,5 @@ class Admin {
   }
 }
 
-module.exports = { Admin };
+// module.exports = { Admin, products };
+exports.Admin = Admin;
