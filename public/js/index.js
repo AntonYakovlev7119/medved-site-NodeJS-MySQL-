@@ -8,35 +8,35 @@ let scrollYBefore = scrollY;
 
 // Проверка положения на странице для задания состояния навигации
 
-if(scrollY === 0) headerNavigation.classList.add(".header__navigation--scrolled-top");
+if (scrollY === 0)
+  headerNavigation.classList.add(".header__navigation--scrolled-top");
 else headerNavigation.classList.add("header__navigation--scrolled-down");
 
-  // Отслеживание скролла
+// Отслеживание скролла
 
-  window.addEventListener("scroll", (e) => {
-    scrollYBefore = scrollY;
-    scrollY = this.scrollY || document.documentElement.scrollTop;
-  
-    // Прокрутка в верх страницы
-    if((scrollY === 0) && (scrollYBefore > 0)) {
-      headerNavigation.style.cssText = ""
-      headerNavigation.classList.add("header__navigation--scrolled-top");
-      headerNavigation.classList.remove("header__navigation--scrolled-down");
-      headerNavigation.style.cssText = `animation: ${animationDuration}s nav-color-to-gradient linear`;
-      
-    };
-    // Прокрутка в низ страницы
-    if((scrollY > 0) && (scrollYBefore < scrollY)) {
-      headerNavigation.style.cssText = ""
-      headerNavigation.classList.remove("header__navigation--scrolled-top");
-      headerNavigation.classList.add("header__navigation--scrolled-down");
-      headerNavigation.style.cssText = `animation: ${animationDuration}s nav-color-to-flat linear`;
-    }
+window.addEventListener("scroll", (e) => {
+  scrollYBefore = scrollY;
+  scrollY = this.scrollY || document.documentElement.scrollTop;
 
-    treeClearingImg.style.cssText = `--scrollTop: ${scrollY}px`;
-  });
+  // Прокрутка в верх страницы
+  if (scrollY === 0 && scrollYBefore > 0) {
+    headerNavigation.style.cssText = "";
+    headerNavigation.classList.add("header__navigation--scrolled-top");
+    headerNavigation.classList.remove("header__navigation--scrolled-down");
+    headerNavigation.style.cssText = `animation: ${animationDuration}s nav-color-to-gradient linear`;
+  }
+  // Прокрутка в низ страницы
+  if (scrollY > 0 && scrollYBefore < scrollY) {
+    headerNavigation.style.cssText = "";
+    headerNavigation.classList.remove("header__navigation--scrolled-top");
+    headerNavigation.classList.add("header__navigation--scrolled-down");
+    headerNavigation.style.cssText = `animation: ${animationDuration}s nav-color-to-flat linear`;
+  }
 
-  // Отслеживание курсора
+  treeClearingImg.style.cssText = `--scrollTop: ${scrollY}px`;
+});
+
+// Отслеживание курсора
 
 document.addEventListener("mousemove", (e) => {
   Object.assign(introBackground, {
@@ -47,24 +47,26 @@ document.addEventListener("mousemove", (e) => {
   });
 });
 
-  // Отслеживание появления объектов на экране при скролле
+// Отслеживание появления объектов на экране при скролле
 
-const animatedObjects = document.querySelectorAll(
-    ".wood, .wood-products, .order, .transportation"
-  );
-  
-  const showObjects = (entries, observer) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add(`${entry.target.classList[0]}--show`);
-        observer.unobserve(entry.target);
-      }
-    });
-  };
-  
-  const options = { threshold: 0.5 };
-  
-  const observer = new IntersectionObserver(showObjects, options);
-  
-  animatedObjects.forEach((object) => observer.observe(object));
-  
+const mainAnimatedSections = document.querySelectorAll(
+  ".wood, .wood-products, .transportation"
+);
+const orderAnimatedSection = document.querySelector(".order");
+
+const showObjects = (entries, observer) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add(`${entry.target.classList[0]}--show`);
+      observer.unobserve(entry.target);
+    }
+  });
+};
+
+const mainObserver = new IntersectionObserver(showObjects, { threshold: 0.5 });
+const orderObserver = new IntersectionObserver(showObjects, {
+  threshold: 0.3,
+});
+
+mainAnimatedSections.forEach((object) => mainObserver.observe(object));
+orderObserver.observe(orderAnimatedSection);
