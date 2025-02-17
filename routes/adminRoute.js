@@ -18,6 +18,7 @@ router.get("/get_cms_list_content", authMiddleware, Admin.getCmsListContent);
 router.get("/catalog_management", authMiddleware, Admin.getСatalogPage);
 router.get("/orders", authMiddleware, Admin.getOrdersPage);
 router.get("/sign_out", authMiddleware, Admin.signOut);
+
 router.post("/cms_data_update", authMiddleware, Admin.saveCmsChanges);
 router.post(
   "/catalog_management/add_product",

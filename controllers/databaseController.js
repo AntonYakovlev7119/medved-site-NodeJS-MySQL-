@@ -1,28 +1,10 @@
-const mysql = require("mysql2");
 const { get } = require("../routes/authRoute");
-const ApiError = require("./Error");
+const ApiError = require("../models/Error");
+const { dbRequest, dbErrorHandler, pool } = require("../models/DB");
 
-const dbPoolConfig = {
-  connectionLimit: 20,
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  database: process.env.MYSQL_DATABASE,
-  password: process.env.MYSQL_PASSWORD,
-};
-
-// const dbConnectionlConfig = {
-//   host: process.env.MYSQL_HOST,
-//   user: process.env.MYSQL_USER,
-//   database: process.env.MYSQL_DATABASE,
-//   password: process.env.MYSQL_PASSWORD,
-// };
-
-const pool = mysql.createPool(dbPoolConfig);
-const promisePool = pool.promise();
-
-class Content {
+class DB {
   static async getPageContentSortedByPage() {
-    return Content.requestToDB(
+    return dbRequest(
       "SELECT page, section, content FROM cms_data",
       null,
       ([data]) => {
@@ -41,6 +23,8 @@ class Content {
         return content;
       }
     ).catch((err) => {
+      console.log(err);
+
       throw ApiError.internalError(
         "Не удалось получить данные страницы из базы данных"
       );
@@ -48,7 +32,7 @@ class Content {
   }
 
   static async getAllPagesContent() {
-    return Content.requestToDB("SELECT * FROM cms_data", null, ([data]) => {
+    return dbRequest("SELECT * FROM cms_data", null, ([data]) => {
       const content = {};
 
       data.forEach((elem) => {
@@ -67,7 +51,7 @@ class Content {
   }
 
   static async getProducts() {
-    return Content.requestToDB("SELECT * FROM products", null, ([data]) => {
+    return dbRequest("SELECT * FROM products", null, ([data]) => {
       const products = [];
 
       data.forEach((elem) => {
@@ -89,7 +73,7 @@ class Content {
   }
 
   static async getAllOrders() {
-    return Content.requestToDB("SELECT * FROM orders", null, ([data]) => {
+    return dbRequest("SELECT * FROM orders", null, ([data]) => {
       const orders = [];
 
       data.forEach((elem) => {
@@ -118,15 +102,11 @@ class Content {
   static async getClientOrder(order_id) {
     const id = order_id;
 
-    return Content.requestToDB(
-      "SELECT cart FROM orders WHERE id=?",
-      [id],
-      (data) => {
-        console.log(data);
+    return dbRequest("SELECT cart FROM orders WHERE id=?", [id], (data) => {
+      console.log(data);
 
-        return data[0][0].cart;
-      }
-    ).catch((err) => {
+      return data[0][0].cart;
+    }).catch((err) => {
       throw ApiError.internalError(
         "Не удалось получить данные заказа из базы данных"
       );
@@ -137,7 +117,7 @@ class Content {
     const cart = client_cart;
     const cart_order = JSON.stringify(cart.cart);
 
-    return Content.requestToDB(
+    return dbRequest(
       "INSERT INTO orders (client, telephone, cart, cart_count, order_notes, request_type, status, date) VALUES (?,?,?,?,?,?,?, strftime('%Y-%m-%d', date('now')))",
       cart.name,
       cart.telephone,
@@ -154,7 +134,7 @@ class Content {
   static async updateCmsData(data) {
     const cmsChanges = data;
 
-    const connection = await promisePool.getConnection();
+    const connection = await pool.getConnection();
 
     connection.beginTransaction();
 
@@ -177,13 +157,13 @@ class Content {
 
       cmsChanges.forEach((change) => {
         const promise = new Promise(async (res, rej) => {
-          await Content.requestToDB(
+          await dbRequest(
             "UPDATE cms_data SET content = ? WHERE section = ?",
             [change[1], change[0]],
             ([data]) => {
               if (data.affectedRows === 0) {
                 console.log(data);
-                Content.dbErrorHandler({
+                dbErrorHandler({
                   status: 401,
                   message: `Таких данных не существует: {${change[0]}: ${change[1]}}`,
                 });
@@ -209,43 +189,17 @@ class Content {
     }
   }
 
-  static async requestToDB(sql, data, dbAction, connection) {
-    if (!connection) {
-      return promisePool
-        .query(sql, data)
-        .then((result) => {
-          if (dbAction) {
-            return dbAction(result);
-          } else {
-            return result;
-          }
-        })
-        .catch((err) => {
-          Content.dbErrorHandler(err);
+  static async refreshCachedContent() {
+    try {
+      let sortedCmsContent = await DB.getPageContentSortedByPage();
+      let cmsContent = await DB.getAllPagesContent();
+      let products = await DB.getProducts();
 
-          throw new Error();
-        });
-    } else {
-      return connection
-        .query(sql, data)
-        .then((result) => {
-          if (dbAction) {
-            return dbAction(result);
-          } else {
-            return result;
-          }
-        })
-        .catch((err) => {
-          Content.dbErrorHandler(err);
-
-          throw new Error();
-        });
+      return { sortedCmsContent, cmsContent, products };
+    } catch (err) {
+      console.log(err);
     }
-  }
-
-  static dbErrorHandler(error) {
-    console.error(error);
   }
 }
 
-module.exports = { Content, pool };
+exports.DB = DB;

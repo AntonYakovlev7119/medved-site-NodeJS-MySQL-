@@ -1,18 +1,10 @@
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("medvedDB.db");
 const fs = require("fs");
-const { Content } = require("../models/Content");
+const { DB } = require("./databaseController");
 const ApiError = require("../models/Error");
 
-let cmsContent = null;
-let products = [];
 let orders = [];
-
-(async function () {
-  // cmsContent = await Content.getAllPagesContent();
-  // products = await Content.getProducts();
-  // exports.products = await Content.getProducts();
-})();
 
 class Admin {
   static getCmsPage(req, res) {
@@ -23,22 +15,22 @@ class Admin {
     }
   }
 
-  static getCmsListContent(req, res, next) {
-    return res.json(cmsContent);
+  static getCmsListContent(req, res) {
+    return res.json(global.cachedCmsContent.cmsContent);
   }
 
-  static async saveCmsChanges(req, res, next) {
-    const data = req.body;
-    const cmsContentChanges = Object.entries(data);
-
+  static async saveCmsChanges(req, res) {
     try {
-      const dbRequest = await Content.updateCmsData(cmsContentChanges);
+      const data = req.body;
+      const cmsContentChanges = Object.entries(data);
 
-      cmsContent = await Content.getAllPagesContent();
+      const request = await DB.updateCmsData(cmsContentChanges);
 
-      return res.status(200).json(dbRequest);
+      return res.status(200).json(request);
     } catch (err) {
-      return res.status(err.status).json(err);
+      console.log(err);
+
+      return res.status(err.status).json(err.message);
     }
   }
 
@@ -47,14 +39,17 @@ class Admin {
       const product_id = req.query.product_id;
 
       if (product_id) {
-        products.forEach((elem) => {
+        global.cachedCmsContent.products.forEach((elem) => {
           if (elem.id == product_id) {
             return res.json(elem);
           }
         });
       }
 
-      return res.render("admin", { req, products });
+      return res.render("admin", {
+        req,
+        products: global.cachedCmsContent.products,
+      });
     } catch (err) {
       return next(new ApiError(err.status, err.message));
     }
@@ -62,7 +57,7 @@ class Admin {
 
   static async getOrdersPage(req, res, next) {
     try {
-      orders = await Content.getAllOrders();
+      orders = await DB.getAllOrders();
 
       return res.render("admin", { req, orders });
     } catch (err) {
@@ -88,7 +83,7 @@ class Admin {
       product_img = product_img.filename;
     }
 
-    await Content.requestToDB(
+    await DB.dbRequest(
       "INSERT INTO products (title, description, price, img) VALUES (?,?,?,?)",
       [product_title, product_desc, product_price, product_img]
     )
@@ -107,13 +102,13 @@ class Admin {
 
     new Promise(async (res, rej) => {
       if (!product_img_file) {
-        await Content.requestToDB(
+        await DB.dbRequest(
           "UPDATE products SET title=?, description=?, price=? WHERE id=?",
           [product_title, product_desc, product_price, product_id]
         );
       } else {
         product_img_file = product_img_file.filename;
-        await Content.requestToDB(
+        await DB.dbRequest(
           "UPDATE products SET title=?, description=?, price=?, img=? WHERE id=?",
           [
             product_title,
@@ -149,5 +144,4 @@ class Admin {
   }
 }
 
-// module.exports = { Admin, products };
-exports.Admin = Admin;
+module.exports = { Admin };

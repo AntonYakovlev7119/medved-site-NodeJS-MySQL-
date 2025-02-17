@@ -14,22 +14,15 @@ const errorHandler = require("./middleware/errorHandler");
 const authMiddleware = require("./middleware/authMiddleware");
 
 const ApiError = require("./models/Error");
-const { Content, pool } = require("./models/Content");
+const { DB } = require("./controllers/databaseController");
+const { pool } = require("./models/DB");
 
-let cmsContent = null;
-let products = null;
-
-setInterval(async () => {
-  cmsContent = await Content.getPageContentSortedByPage();
-  products = await Content.getProducts();
-}, 5000);
-
-// setInterval(async () => {
-//   let DBChanges = require("./controllers/adminController").DBChanges;
-
-//   if (DBChanges && DBChanges.isChanged && DBChanges.changes.length !== 0) {
-//   }
-// }, 2500);
+let server = null;
+global.cachedCmsContent = {
+  sortedCmsContent: null,
+  cmsContent: null,
+  products: null,
+};
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -42,7 +35,7 @@ app.use(favicon(path.join("public", "./img/logo/favicon.ico")));
 
 app.get("/test", async (req, res, next) => {
   try {
-    let DBContent = await Content.getAllPagesContent();
+    let DBContent = await DB.getAllPagesContent();
 
     if (DBContent instanceof Error) throw DBContent;
 
@@ -51,44 +44,15 @@ app.get("/test", async (req, res, next) => {
     return next(err);
   }
 
-  // await Content.getAllPagesContent().then((data) => {
+  // await DB.getAllPagesContent().then((data) => {
   //   return (DBContent = data);
   // });
 });
 
-app.get("/test2", async (req, res) => {
-  const result = await Content.getPageContentSortedByPage();
-
-  res.json(result);
-});
-
-app.get("/test4", (req, res) => {
-  res.render("./test");
-});
-
-app.post("/test4", (req, res) => {
-  try {
-    const data = req.body;
-
-    console.log(data);
-  } catch (err) {
-    return next(err);
-  }
-});
-
-// app.get("/test3", async (req, res) => {
-//   const result = Content.requestToDB2(
-//     // "UPDATE cms_data SET content='новый контент' WHERE section='wood3' "
-//     "SELECT * FROM cms_data"
-//   );
-
-//   res.json(result);
-// });
-
 app.get("/", authMiddleware, async (req, res, next) => {
   try {
     res.render("index", {
-      content: cmsContent.index,
+      content: global.cachedCmsContent.sortedCmsContent.index,
       req,
     });
   } catch (err) {
@@ -99,8 +63,8 @@ app.get("/", authMiddleware, async (req, res, next) => {
 app.get("/catalog", authMiddleware, async (req, res, next) => {
   try {
     res.render("./pages/catalog", {
-      content: cmsContent.catalog,
-      products,
+      content: global.cachedCmsContent.sortedCmsContent.catalog,
+      products: global.cachedCmsContent.products,
       req,
     });
   } catch (err) {
@@ -111,7 +75,7 @@ app.get("/catalog", authMiddleware, async (req, res, next) => {
 app.get("/contacts", authMiddleware, async (req, res, next) => {
   try {
     res.render("./pages/contacts", {
-      content: cmsContent.contacts,
+      content: global.cachedCmsContent.sortedCmsContent.contacts,
       req,
     });
   } catch (err) {
@@ -130,28 +94,34 @@ app.use((req, res) => {
   res.render("error", { err: 404, message: "Такой страницы не существует" });
 });
 
-let server;
-
-(async function () {
+async function startServer() {
   try {
-    cmsContent = await Content.getPageContentSortedByPage();
-    console.log("1.Pages content was successfully loaded from datebase");
+    server = await new Promise(async (res, rej) => {
+      global.cachedCmsContent.sortedCmsContent =
+        await DB.getPageContentSortedByPage();
+      console.log("Pages content was successfully loaded from datebase");
 
-    // setTimeout(() => {
-    // products = require("./controllers/adminController").products;
-    // console.log(products);
-    // }, 2000);
-    products = await Content.getProducts();
-    console.log("2.Products were successfully loaded from datebase");
+      global.cachedCmsContent.products = await DB.getProducts();
+      console.log("Products were successfully loaded from datebase");
 
-    server = app.listen(PORT, HOST, () => {
-      console.log(`Server is running on port ${PORT}`);
+      setInterval(async () => {
+        global.cachedCmsContent = await DB.refreshCachedContent();
+      }, 5000);
+
+      res(
+        app.listen(PORT, HOST, () => {
+          console.log(`Server is running on port ${PORT}`);
+        })
+      );
     });
   } catch (err) {
-    // console.log(err);
+    console.log(err);
+
     return process.exit();
   }
-})();
+}
+
+startServer();
 
 process.on("SIGINT", () => {
   console.log("SIGINT signal received.");
@@ -159,7 +129,7 @@ process.on("SIGINT", () => {
   server.close(() => {
     console.log("Closed out remaining connections");
 
-    pool.end((err) => {
+    pool.end(() => {
       console.log("Database connections are closed");
     });
 

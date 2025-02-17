@@ -1,9 +1,9 @@
-const Content = require("../models/Content");
+const { DB } = require("./databaseController");
 
 class Client {
   static async getOrder(req, res, next) {
     const id = req.query.id;
-    const data = await Content.getClientOrder(id);
+    const data = await DB.getClientOrder(id);
     const order_content = JSON.parse(data);
 
     res.render("./__blocks/__order", { order: order_content });
@@ -13,7 +13,7 @@ class Client {
     try {
       const client_cart = req.body;
 
-      Content.createCartOrder(client_cart);
+      DB.createCartOrder(client_cart);
     } catch (err) {
       return next(new ApiError(err.status, err.message));
     }
