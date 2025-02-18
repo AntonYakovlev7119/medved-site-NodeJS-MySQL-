@@ -3,6 +3,7 @@ const db = new sqlite3.Database("medvedDB.db");
 const fs = require("fs");
 const { DB } = require("./databaseController");
 const ApiError = require("../models/Error");
+const { log } = require("console");
 
 let orders = [];
 
@@ -94,37 +95,41 @@ class Admin {
   }
 
   static async editProduct(req, res, next) {
-    const product_id = req.params.id;
-    const product_title = req.body.product__name;
-    const product_desc = req.body.product__description;
-    const product_price = req.body.product__price;
-    let product_img_file = req.file;
+    try {
+      const product_id = req.params.id;
+      const product_title = req.body.product__name;
+      const product_desc = req.body.product__description;
+      const product_price = req.body.product__price;
+      let product_img_file = req.file;
 
-    new Promise(async (res, rej) => {
-      if (!product_img_file) {
-        await DB.dbRequest(
-          "UPDATE products SET title=?, description=?, price=? WHERE id=?",
-          [product_title, product_desc, product_price, product_id]
-        );
-      } else {
-        product_img_file = product_img_file.filename;
-        await DB.dbRequest(
-          "UPDATE products SET title=?, description=?, price=?, img=? WHERE id=?",
-          [
-            product_title,
-            product_desc,
-            product_price,
-            product_img_file,
-            product_id,
-          ]
-        );
-      }
-    })
-      .then(() => res.redirect("/admin/catalog_management"))
+      new Promise(async (res, rej) => {
+        if (!product_img_file) {
+          await dbRequest(
+            "UPDATE products SET title=?, description=?, price=? WHERE id=?",
+            [product_title, product_desc, product_price, product_id]
+          );
+        } else {
+          product_img_file = product_img_file.filename;
+          await DB.dbRequest(
+            "UPDATE products SET title=?, description=?, price=?, img=? WHERE id=?",
+            [
+              product_title,
+              product_desc,
+              product_price,
+              product_img_file,
+              product_id,
+            ]
+          );
+        }
+      })
+        .then(() => res.redirect("/admin/catalog_management"))
 
-      .catch((err) => {
-        return next(new ApiError(err.status, err.message));
-      });
+        .catch((err) => {
+          return next(new ApiError(err.status, err.message));
+        });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   static async deleteProduct(req, res, next) {
