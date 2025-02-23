@@ -1,0 +1,50 @@
+<div class="catalog-managment-panel">
+  <div class="managment-menu">
+    <button class="add__product" onclick="selectAction('add')">Добавить</button>
+    <button class="edit__product" onclick="selectAction('edit')">
+      Редактировать
+    </button>
+    <button class="delete__product" onclick="selectAction('delete')">
+      Удалить
+    </button>
+  </div>
+
+  <div class="product-select-container">
+    <select name="product-select" id="product-select">
+      <option>-- Выбор товара --</option>
+      <% products.forEach((elem)=>{ %>
+      <option value="<%= elem.id %>"><%= elem.title %></option>
+      <% }) %>
+    </select>
+  </div>
+
+  <form
+    method="post"
+    id="product-characteristics"
+    enctype="multipart/form-data"
+  >
+    <img src="../img/no_img.jpg" alt="Картинка товара" id="product__img-view" />
+
+    <label>Добавить изображение</label>
+    <label class="product__img">
+      <input type="file" name="img_file" id="img_file" onchange="getImage()" />
+      <span class="product__img-btn">Выберите файл</span>
+      <span class="product__img-text">Файл не выбран</span>
+    </label>
+
+    <label for="product__name">Наименование</label>
+    <input type="text" name="product__name" id="product__name" />
+
+    <label for="product__description">Описание</label>
+    <textarea
+      type="text"
+      name="product__description"
+      id="product__description"
+    ></textarea>
+
+    <label for="product__price">Цена</label>
+    <input type="text" name="product__price" id="product__price" />
+
+    <button type="submit"></button>
+  </form>
+</div>

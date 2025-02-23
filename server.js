@@ -99,7 +99,10 @@ async function startServer() {
     server = await new Promise(async (res, rej) => {
       global.cachedCmsContent.sortedCmsContent =
         await DB.getPageContentSortedByPage();
-      console.log("Pages content was successfully loaded from datebase");
+      console.log("Sorted pages content was successfully loaded from datebase");
+
+      global.cachedCmsContent.cmsContent = await DB.getAllPagesContent();
+      console.log("Raw pages content was successfully loaded from datebase");
 
       global.cachedCmsContent.products = await DB.getProducts();
       console.log("Products were successfully loaded from datebase");

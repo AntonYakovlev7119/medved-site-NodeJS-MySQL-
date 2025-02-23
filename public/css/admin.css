@@ -192,6 +192,7 @@ form.cms_managment {
 
 #product__img-view {
   max-height: 300px;
+  width: 100%;
   border-radius: 10px;
 }
 

@@ -1,5 +1,6 @@
 const introBackground = document.querySelector(".intro__background");
 const treeClearingImg = document.querySelector(".tree-clearing__background");
+const treeClearingSection = document.querySelector(".tree-clearing");
 const headerNavigation = document.querySelector(".header__navigation");
 
 const animationDuration = 0.5;
@@ -70,3 +71,21 @@ const orderObserver = new IntersectionObserver(showObjects, {
 
 mainAnimatedSections.forEach((object) => mainObserver.observe(object));
 orderObserver.observe(orderAnimatedSection);
+
+// Отслеживание повяления картинки из секции "расчистка древесных насаждений"
+
+const treeClearingImgMove = (entry, observer) => {
+  if (entry[0].isIntersecting) {
+    treeClearingImg.classList.add("tree-clearing__background--move");
+    console.log(1);
+  } else {
+    // treeClearingImg.classList.remove("tree-clearing__background--move");
+  }
+};
+
+const treeClearingObserver = new IntersectionObserver(treeClearingImgMove, {
+  rootMargin: "100px 0px",
+  threshold: 0.1,
+});
+
+treeClearingObserver.observe(treeClearingImg);

@@ -2,6 +2,7 @@
 
 :root {
   --product-gap: 25px;
+  /* --product-count: 5; */
 }
 
 main {
@@ -13,8 +14,10 @@ main {
 }
 
 .catalog-container {
+  /* --product-count: 5; */
+
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(var(--product-count), 1fr);
   gap: 15px;
   padding: 60px 35px 60px 35px;
   max-width: 1700px;

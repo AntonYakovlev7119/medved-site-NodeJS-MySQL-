@@ -97,14 +97,11 @@ class DB {
       );
     });
   }
-  '[{"id":"2","img":"no_img.jpg","title":"Брус двухактный","price":"1200","count":5},{"id":"4","img":"no_img.jpg","title":"Доски вагонка","price":"600","count":3}]';
 
   static async getClientOrder(order_id) {
     const id = order_id;
 
     return dbRequest("SELECT cart FROM orders WHERE id=?", [id], (data) => {
-      console.log(data);
-
       return data[0][0].cart;
     }).catch((err) => {
       throw ApiError.internalError(

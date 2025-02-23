@@ -2,8 +2,8 @@ const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("medvedDB.db");
 const fs = require("fs");
 const { DB } = require("./databaseController");
+const dbRequest = require("../models/DB").dbRequest;
 const ApiError = require("../models/Error");
-const { log } = require("console");
 
 let orders = [];
 
@@ -84,7 +84,7 @@ class Admin {
       product_img = product_img.filename;
     }
 
-    await DB.dbRequest(
+    await dbRequest(
       "INSERT INTO products (title, description, price, img) VALUES (?,?,?,?)",
       [product_title, product_desc, product_price, product_img]
     )
@@ -110,7 +110,7 @@ class Admin {
           );
         } else {
           product_img_file = product_img_file.filename;
-          await DB.dbRequest(
+          await dbRequest(
             "UPDATE products SET title=?, description=?, price=?, img=? WHERE id=?",
             [
               product_title,
@@ -121,6 +121,8 @@ class Admin {
             ]
           );
         }
+
+        res();
       })
         .then(() => res.redirect("/admin/catalog_management"))
 
@@ -140,7 +142,7 @@ class Admin {
       if (product_img !== "no_img.jpg")
         fs.unlinkSync(`./public/product_images/${product_img}`);
 
-      db.run("DELETE FROM products WHERE id=?", product_id);
+      await dbRequest("DELETE FROM products WHERE id=?", [product_id]);
 
       res.redirect("/admin/catalog_management");
     } catch (err) {

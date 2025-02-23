@@ -810,12 +810,10 @@
   position: absolute;
   height: 100%;
   width: 100%;
-  transform: translate3d(0, calc(var(--scrollTop) / 2), 0);
-  /* top: -190%; */
-  /* top: -200%; */
-  top: -2100px;
+  /* transform: translate3d(0, calc(var(--scrollTop) / 2), 0); */
+  /* top: -2100px; */
   /* top: -270vh; */
-  left: 0;
+  /* left: 0; */
   z-index: -1;
 }
 
@@ -838,6 +836,10 @@
   background: var(--dark);
   opacity: 0.6;
   z-index: 2;
+}
+
+.tree-clearing__background--move {
+  transform: translate3d(0, calc(var(--scrollTop) / 10), 0);
 }
 
 .tree-clearing__description {

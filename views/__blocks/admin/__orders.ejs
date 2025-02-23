@@ -1,0 +1,42 @@
+<div class="orders-panel">
+  <div class="orders-filter-menu"></div>
+
+  <div class="orders">
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Клиент</th>
+          <th>Телефон</th>
+          <th>Количество товаров</th>
+          <th>Тип заявки</th>
+          <th>Дата</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(elem=>{ %>
+        <tr class="order">
+          <td><%= elem.id %></td>
+          <td><%= elem.client %></td>
+          <td><%= elem.telephone %></td>
+          <td><%= elem.cart_count %></td>
+          <td><%= elem.request_type %></td>
+          <td><%= elem.date %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="order-content">
+  <div class="order__close-cross">
+    <img src="../img/close-cross-2.png" alt="Закрыть" />
+  </div>
+  <div class="order-content-inner">
+    <p class="order-title"></p>
+    <div class="order-content-container"></div>
+  </div>
+</div>
+
+<div class="dark-canvas"></div>

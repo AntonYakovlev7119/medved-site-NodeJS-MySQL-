@@ -1,135 +1,17 @@
-<%-include("./__blocks/__admin_header.ejs") %>
+<%-include("./__blocks/admin/__admin_header.ejs") %>
 
 <main>
   <%if(req.path === "/cms"){ %>
-  <div class="cms-content">
-    <select name="section_select" id="section_select">
-      <option value="">-- Выбор секции --</option>
-    </select>
-    <form class="cms_managment" action="" method="post">
-      <h2 class="title"></h2>
-      <textarea
-        name="content"
-        id="cms_text_area"
-        cols="30"
-        rows="10"
-      ></textarea>
-      <button class="save_changes_button" type="submit">
-        Подтвердить изменения
-      </button>
-    </form>
-  </div>
+  <%-include("./__blocks/admin/__cms.ejs") %>
 
   <% } %> <%if(req.path === "/catalog_management"){ %>
-  <div class="catalog-managment-panel">
-    <div class="managment-menu">
-      <button class="add__product" onclick="selectAction('add')">
-        Добавить
-      </button>
-      <button class="edit__product" onclick="selectAction('edit')">
-        Редактировать
-      </button>
-      <button class="delete__product" onclick="selectAction('delete')">
-        Удалить
-      </button>
-    </div>
-
-    <div class="product-select-container">
-      <select name="product-select" id="product-select">
-        <option>-- Выбор товара --</option>
-        <% products.forEach((elem)=>{ %>
-        <option value="<%= elem.id %>"><%= elem.title %></option>
-        <% }) %>
-      </select>
-    </div>
-
-    <form
-      method="post"
-      id="product-characteristics"
-      enctype="multipart/form-data"
-    >
-      <img
-        src="../img/no_img.jpg"
-        alt="Картинка товара"
-        id="product__img-view"
-      />
-
-      <label>Добавить изображение</label>
-      <label class="product__img">
-        <input
-          type="file"
-          name="img_file"
-          id="img_file"
-          onchange="getImage()"
-        />
-        <span class="product__img-btn">Выберите файл</span>
-        <span class="product__img-text">Файл не выбран</span>
-      </label>
-
-      <label for="product__name">Наименование</label>
-      <input type="text" name="product__name" id="product__name" />
-
-      <label for="product__description">Описание</label>
-      <textarea
-        type="text"
-        name="product__description"
-        id="product__description"
-      ></textarea>
-
-      <label for="product__price">Цена</label>
-      <input type="text" name="product__price" id="product__price" />
-
-      <button type="submit"></button>
-    </form>
-  </div>
-
+    <%-include("./__blocks/admin/__catalog.ejs") %>
+ 
   <% } %> <%if(req.path === "/orders"){ %>
-  <div class="orders-panel">
-    <div class="orders-filter-menu"></div>
-
-    <div class="orders">
-      <table class="orders-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Клиент</th>
-            <th>Телефон</th>
-            <th>Количество товаров</th>
-            <th>Тип заявки</th>
-            <th>Дата</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% orders.forEach(elem=>{ %>
-          <tr class="order">
-            <td><%= elem.id %></td>
-            <td><%= elem.client %></td>
-            <td><%= elem.telephone %></td>
-            <td><%= elem.cart_count %></td>
-            <td><%= elem.request_type %></td>
-            <td><%= elem.date %></td>
-          </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
-  </div>
+    <%-include("./__blocks/admin/__orders.ejs") %>
   <% } %>
 </main>
 
-<div class="order-content">
-  <div class="order__close-cross">
-    <img src="../img/close-cross-2.png" alt="Закрыть" />
-  </div>
-  <div class="order-content-inner">
-    <p class="order-title"></p>
-    <div class="order-content-container"></div>
-  </div>
-  
-    
-</div>
-
-<div class="dark-canvas"></div>
 
 </div>
 </div>
