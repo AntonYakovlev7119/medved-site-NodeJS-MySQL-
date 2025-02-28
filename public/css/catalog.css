@@ -220,20 +220,26 @@ main {
 }
 
 .buy-product__button {
-  position: absolute;
+  /* position: absolute; */
   font-size: calc(15px + 0.1vw);
+  margin-top: 15px;
   padding: 12px 35px;
   bottom: 30px;
-  color: white;
-  background: var(--dark-wood);
+  color: var(--dark-wood);
+  /* background: var(--dark-wood); */
+  background: transparent;
+  border: 2px solid var(--dark-wood);
   border-radius: 10px;
   cursor: pointer;
+
   transition: var(--btn-transition);
 }
 
 .buy-product__button:hover {
-  background: var(--dark-wood-hover);
-  box-shadow: 0 0 5px rgb(146, 84, 60);
+  /* background: var(--dark-wood-hover); */
+  background: var(--dark-wood);
+  /* box-shadow: 0 0 5px rgb(146, 84, 60); */
+  color: white;
   transition: var(--btn-transition);
 }
 
