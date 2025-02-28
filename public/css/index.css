@@ -839,7 +839,10 @@
 }
 
 .tree-clearing__background--move {
-  transform: translate3d(0, calc(var(--scrollTop) / 10), 0);
+  /* transform: translate3d(0, calc(calc(var(--scrollTop) / 100) * 10), 0);
+  transform: translate3d(0, calc(calc(var(--scrollTop) / 10) - 500px), 0);
+  transform: translate3d(0, calc(calc(var(--scrollTop) / 3) - 125%), 0); */
+  transform: translate3d(0, calc(var(--offsetY) * 2), 0);
 }
 
 .tree-clearing__description {

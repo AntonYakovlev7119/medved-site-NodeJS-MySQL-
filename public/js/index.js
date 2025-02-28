@@ -6,6 +6,9 @@ const headerNavigation = document.querySelector(".header__navigation");
 const animationDuration = 0.5;
 let scrollY = this.scrollY || document.documentElement.scrollTop;
 let scrollYBefore = scrollY;
+let offsetY = document.documentElement.clientHeight;
+let scrolledOffsetY = 0;
+let isTreeClearingIntersecting = false;
 
 // Проверка положения на странице для задания состояния навигации
 
@@ -16,11 +19,19 @@ else headerNavigation.classList.add("header__navigation--scrolled-down");
 // Отслеживание скролла
 
 window.addEventListener("scroll", (e) => {
+  console.log(document.documentElement.clientHeight);
   scrollYBefore = scrollY;
   scrollY = this.scrollY || document.documentElement.scrollTop;
 
+  if (scrollY - scrollYBefore < 0 && isTreeClearingIntersecting)
+    if (isTreeClearingIntersecting)
+      // scrolledOffsetY -= offsetY / 100;
+      scrolledOffsetY -= 1;
+
   // Прокрутка в верх страницы
   if (scrollY === 0 && scrollYBefore > 0) {
+    // if (isTreeClearingIntersecting) scrolledOffsetY -= offsetY / 50;
+
     headerNavigation.style.cssText = "";
     headerNavigation.classList.add("header__navigation--scrolled-top");
     headerNavigation.classList.remove("header__navigation--scrolled-down");
@@ -28,13 +39,16 @@ window.addEventListener("scroll", (e) => {
   }
   // Прокрутка в низ страницы
   if (scrollY > 0 && scrollYBefore < scrollY) {
+    // if (isTreeClearingIntersecting) scrolledOffsetY += offsetY / 100;
+    if (isTreeClearingIntersecting) scrolledOffsetY += 1;
+
     headerNavigation.style.cssText = "";
     headerNavigation.classList.remove("header__navigation--scrolled-top");
     headerNavigation.classList.add("header__navigation--scrolled-down");
     headerNavigation.style.cssText = `animation: ${animationDuration}s nav-color-to-flat linear`;
   }
 
-  treeClearingImg.style.cssText = `--scrollTop: ${scrollY}px`;
+  treeClearingImg.style.cssText = `--scrollTop: ${scrollY}px; --offsetY: ${scrolledOffsetY}px`;
 });
 
 // Отслеживание курсора
@@ -76,9 +90,12 @@ orderObserver.observe(orderAnimatedSection);
 
 const treeClearingImgMove = (entry, observer) => {
   if (entry[0].isIntersecting) {
+    isTreeClearingIntersecting = true;
+
     treeClearingImg.classList.add("tree-clearing__background--move");
     console.log(1);
   } else {
+    isTreeClearingIntersecting = false;
     // treeClearingImg.classList.remove("tree-clearing__background--move");
   }
 };
