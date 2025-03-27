@@ -789,7 +789,7 @@
 .tree-clearing-container {
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
+  min-height: 150vh;
   padding: 100px 0 120px 0;
   /* z-index: 2; */
 }
@@ -808,19 +808,24 @@
 
 .tree-clearing__background {
   position: absolute;
-  height: 100%;
-  width: 100%;
+  /* height: 100%;
+  width: 100%; */
   /* transform: translate3d(0, calc(var(--scrollTop) / 2), 0); */
   /* top: -2100px; */
   /* top: -270vh; */
   /* left: 0; */
+  /* top: calc(0px - var(--scrollTop)); */
+  /* top: -15vh; */
+  inset: -2vw;
+  background-attachment: fixed;
   z-index: -1;
 }
 
 .tree-clearing__background img {
   position: relative;
   display: block;
-  height: 100%;
+  /* height: 100%; */
+  min-height: 100vh;
   width: 100%;
 
   object-fit: cover;
@@ -842,8 +847,9 @@
   /* transform: translate3d(0, calc(calc(var(--scrollTop) / 100) * 10), 0);
   transform: translate3d(0, calc(calc(var(--scrollTop) / 10) - 500px), 0);
   transform: translate3d(0, calc(calc(var(--scrollTop) / 3) - 125%), 0); */
-  transform: translate3d(0, calc(var(--offsetY) * 2), 0);
-  transform: translate3d(0, calc(var(--scrollTop) / 200), 0);
+  /* transform: translate3d(0, calc(var(--offsetY) * 2), 0); */
+  /* transform: translate3d(0, calc(var(--scrollTop) / 200), 0); */
+  /* transform: translate3d(0, calc(var(--scrollTop) / 5), 0); */
 }
 
 .tree-clearing__description {

@@ -19,7 +19,7 @@ else headerNavigation.classList.add("header__navigation--scrolled-down");
 // Отслеживание скролла
 
 window.addEventListener("scroll", (e) => {
-  console.log(document.documentElement.clientHeight);
+  // console.log(document.documentElement.clientHeight);
   scrollYBefore = scrollY;
   scrollY = this.scrollY || document.documentElement.scrollTop;
 
@@ -78,7 +78,7 @@ const showObjects = (entries, observer) => {
   });
 };
 
-const mainObserver = new IntersectionObserver(showObjects, { threshold: 0.5 });
+const mainObserver = new IntersectionObserver(showObjects, { threshold: 0.1 });
 const orderObserver = new IntersectionObserver(showObjects, {
   threshold: 0.3,
 });
@@ -93,7 +93,7 @@ const treeClearingImgMove = (entry, observer) => {
     isTreeClearingIntersecting = true;
 
     treeClearingImg.classList.add("tree-clearing__background--move");
-    console.log(1);
+    // console.log(1);
   } else {
     isTreeClearingIntersecting = false;
     // treeClearingImg.classList.remove("tree-clearing__background--move");

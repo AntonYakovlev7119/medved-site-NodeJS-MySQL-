@@ -127,6 +127,88 @@
   }
 }
 
+@media screen and (max-width: 768px) {
+  .container {
+    align-items: center;
+    gap: 60px;
+    /* padding: 150px 0 100px 0; */
+  }
+
+  .wood {
+    padding: 150px 0 100px 0;
+  }
+
+  .wood .container {
+    flex-direction: column-reverse;
+  }
+
+  .wood__img {
+    margin: 0 !important;
+  }
+
+  .wood__left-side {
+    width: auto !important;
+  }
+
+  .wood__right-side {
+    width: auto !important;
+  }
+
+  .wood-products {
+    padding: 100px 0 100px 0 !important;
+  }
+
+  .wood-products .container {
+    flex-direction: column;
+  }
+
+  .wood-products__img {
+    margin: 0 !important;
+  }
+
+  .wood-products__left-side,
+  .wood-products__right-side {
+    width: auto !important;
+  }
+
+  .order__description {
+    width: auto !important;
+  }
+
+  .tree-clearing__description {
+    width: 90% !important;
+  }
+
+  .transportation .container {
+    flex-direction: column-reverse;
+  }
+
+  .transportation__description,
+  .transportation__left {
+    width: auto !important;
+  }
+
+  .transportation__img {
+    padding: 0 10% !important;
+  }
+
+  .contacts {
+    min-height: 100% !important;
+  }
+
+  .contacts .container {
+    gap: 0;
+  }
+
+  .contacts__description {
+    padding: 0 10% !important;
+  }
+
+  .contacts__contact-types {
+    padding: 20px 0 !important;
+  }
+}
+
 @media screen and (max-width: 700px) {
   .header-nav-container {
     overflow-y: hidden;
@@ -171,7 +253,8 @@
   }
 
   .wood {
-    padding: 150px 0 20px 0 !important;
+    /* padding: 150px 0 20px 0 !important; */
+    padding: 150px 0 20px 0;
   }
 
   .about-company__company-description {
