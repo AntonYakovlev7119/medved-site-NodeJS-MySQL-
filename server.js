@@ -32,6 +32,24 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 app.use(favicon(path.join("public", "./img/logo/favicon.ico")));
+app.use((req, res, next) => {
+  const jwt = require("jsonwebtoken");
+  const secret = process.env.SECRET;
+
+  try {
+    const token = req.cookies.jwt;
+    if (!token && req.baseUrl === "/admin") {
+      return next(ApiError.badRequest("Такой страницы не существует"));
+    }
+    if (!token) return next();
+
+    const decodedData = jwt.verify(token, secret);
+    res.locals.user = decodedData;
+    next();
+  } catch (e) {
+    return next(new ApiError(err.status, err.message));
+  }
+});
 
 app.get("/test", async (req, res, next) => {
   try {
