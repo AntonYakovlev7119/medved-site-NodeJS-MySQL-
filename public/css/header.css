@@ -204,10 +204,7 @@
 .intro__background-img {
   position: absolute;
   background-image: url(../img/header-bg5.2.jpg);
-  /* background-image: url(../img/header-bg4.jpg); */
-  /* background-image: url(../img/header-bg5.4.jpg); */
-  /* background-image: url(../img/header-bg5.5.jpg); */
-  /* background-image: url(../img/header-bg6.png); */
+  /* background-image: url(../img/brevna1.jpg); */
   background-position: center;
   background-size: cover;
   transform: translate3d(var(--move-x), var(--move-y), 0);

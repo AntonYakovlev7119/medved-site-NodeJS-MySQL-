@@ -54,7 +54,9 @@ body {
   font-family: "Montserrat";
   font-weight: 400;
   color: var(--dark);
-  background: var(--dark);
+  /* background: var(--dark); */
+  background-image: url("../img/tree-clearing2.jpg");
+  background-attachment: fixed;
 }
 
 .page-layout {
@@ -401,7 +403,8 @@ body::-webkit-scrollbar-thumb:hover {
 
 .cart {
   position: fixed;
-  display: flex;
+  display: none;
+  /* display: flex; */
   flex-direction: column;
   align-items: center;
   height: 80vh;
@@ -437,6 +440,7 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 .cart-dark-canvas {
+  display: none;
   content: "";
   position: fixed;
   height: 100%;
@@ -566,6 +570,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 .client-info {
   position: fixed;
+  display: none;
   height: 60vh;
   width: 40vw;
   top: 20%;

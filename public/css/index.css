@@ -345,31 +345,18 @@
 }
 
 .wood-products__subtitle {
+  align-self: flex-start;
   margin-bottom: 15px;
 }
 
-/* .wood-products__description {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-} */
-
 .wood-products__description {
   position: relative;
-  /* display: block; */
-  font-family: "Montserrat";
-  /* font-family: Roboto; */
   font-weight: 300;
-  /* font-size: calc(15px + 0.5vw); */
   line-height: 1.5em;
   text-shadow: 0 0px 1px rgb(187, 187, 187);
   white-space: pre-wrap;
   word-wrap: break-word;
-  /* height: 100%; */
   width: 100%;
-  /* top: 0;
-  left: 0; */
-  /* background: var(--light-wood); */
 }
 
 .wood-products__description ul {

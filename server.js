@@ -10,14 +10,17 @@ const HOST = process.env.HOST || "localhost";
 const authRoute = require("./routes/authRoute");
 const adminRoute = require("./routes/adminRoute");
 const clientRoute = require("./routes/clientRoute");
+
 const errorHandler = require("./middleware/errorHandler");
 const authMiddleware = require("./middleware/authMiddleware");
 
-const ApiError = require("./models/Error");
 const { DB } = require("./controllers/databaseController");
+
+const ApiError = require("./models/Error");
 const { pool } = require("./models/DB");
 
 let server = null;
+
 global.cachedCmsContent = {
   sortedCmsContent: null,
   cmsContent: null,
@@ -32,39 +35,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 app.use(favicon(path.join("public", "./img/logo/favicon.ico")));
-app.use((req, res, next) => {
-  const jwt = require("jsonwebtoken");
-  const secret = process.env.SECRET;
-
-  try {
-    const token = req.cookies.jwt;
-    if (!token && req.baseUrl === "/admin") {
-      return next(ApiError.badRequest("Такой страницы не существует"));
-    }
-    if (!token) return next();
-
-    const decodedData = jwt.verify(token, secret);
-    res.locals.user = decodedData;
-    next();
-  } catch (e) {
-    return next(new ApiError(err.status, err.message));
-  }
-});
 
 app.get("/test", async (req, res, next) => {
   try {
-    let DBContent = await DB.getAllPagesContent();
-
-    if (DBContent instanceof Error) throw DBContent;
-
-    return res.json(DBContent);
   } catch (err) {
     return next(err);
   }
-
-  // await DB.getAllPagesContent().then((data) => {
-  //   return (DBContent = data);
-  // });
 });
 
 app.get("/", authMiddleware, async (req, res, next) => {
@@ -74,7 +50,7 @@ app.get("/", authMiddleware, async (req, res, next) => {
       req,
     });
   } catch (err) {
-    return next(new ApiError(err));
+    return next(ApiError.internalError(err));
   }
 });
 
@@ -86,7 +62,7 @@ app.get("/catalog", authMiddleware, async (req, res, next) => {
       req,
     });
   } catch (err) {
-    return next(new ApiError(err));
+    return next(ApiError.internalError(err));
   }
 });
 
@@ -97,7 +73,7 @@ app.get("/contacts", authMiddleware, async (req, res, next) => {
       req,
     });
   } catch (err) {
-    return next(new ApiError(err));
+    return next(ApiError.internalError(err));
   }
 });
 

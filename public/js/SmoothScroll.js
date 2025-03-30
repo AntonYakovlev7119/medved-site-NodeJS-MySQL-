@@ -18,7 +18,7 @@
   var defaultOptions = {
     // Scrolling Core
     frameRate: 150, // [Hz]
-    animationTime: 700, // [ms]
+    animationTime: 450, // [ms]
     stepSize: 150, // [px]
 
     // Pulse (less tweakable)
@@ -830,6 +830,3 @@
   else if ("object" == typeof exports) module.exports = SmoothScroll;
   else window.SmoothScroll = SmoothScroll;
 })();
-
-console.log(window.SmoothScroll);
-console.log(window.SmoothScrollOptions);
