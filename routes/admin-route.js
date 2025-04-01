@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { check } = require("express-validator");
-const authMiddleware = require("../middleware/authMiddleware");
-const { Admin } = require("../controllers/adminController");
+const authMiddleware = require("../middleware/auth-middleware");
+const { Admin } = require("../controllers/admin-controller");
 const multer = require("multer");
 const storageConfig = multer.diskStorage({
   destination: (req, file, cb) => {

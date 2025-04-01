@@ -1,4 +1,4 @@
-const ApiError = require("../models/Error");
+const ApiError = require("../utils/api-error");
 const fs = require("fs/promises");
 
 module.exports = async (err, req, res, next) => {
@@ -11,11 +11,11 @@ module.exports = async (err, req, res, next) => {
 
   console.error(err);
 
-  await fs.appendFile(
-    "./logs/ApiError-log.txt",
-    `${new Date().toLocaleString("ru")}: ${err.status} - ${err.stack}\n`,
-    "utf-8"
-  );
+  // await fs.appendFile(
+  //   "./logs/ApiError-log.txt",
+  //   `${new Date().toLocaleString("ru")}: ${err.status} - ${err.stack}\n`,
+  //   "utf-8"
+  // );
 
   return res.render("error", { err: 500, message: "Непредвиденная ошибка" });
 };

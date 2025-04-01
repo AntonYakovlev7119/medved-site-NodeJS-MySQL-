@@ -1,9 +1,7 @@
-const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("medvedDB.db");
 const fs = require("fs");
-const { DB } = require("./databaseController");
-const dbRequest = require("../models/DB").dbRequest;
-const ApiError = require("../models/Error");
+const { DB } = require("../database/database-controller");
+const dbRequest = require("../database/DB").dbRequest;
+const ApiError = require("../utils/api-error");
 
 let orders = [];
 

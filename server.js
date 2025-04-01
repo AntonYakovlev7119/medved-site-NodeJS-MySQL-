@@ -7,17 +7,15 @@ const favicon = require("serve-favicon");
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || "localhost";
 
-const authRoute = require("./routes/authRoute");
-const adminRoute = require("./routes/adminRoute");
-const clientRoute = require("./routes/clientRoute");
+const authRoute = require("./routes/auth-route");
+const adminRoute = require("./routes/admin-route");
+const clientRoute = require("./routes/client-route");
 
-const errorHandler = require("./middleware/errorHandler");
-const authMiddleware = require("./middleware/authMiddleware");
+const errorHandler = require("./middleware/error-handler");
 
-const { DB } = require("./controllers/databaseController");
+const { DB } = require("./database/database-controller");
 
-const ApiError = require("./models/Error");
-const { pool } = require("./models/DB");
+const { pool } = require("./database/DB");
 
 let server = null;
 
@@ -43,43 +41,9 @@ app.get("/test", async (req, res, next) => {
   }
 });
 
-app.get("/", authMiddleware, async (req, res, next) => {
-  try {
-    res.render("index", {
-      content: global.cachedCmsContent.sortedCmsContent.index,
-      req,
-    });
-  } catch (err) {
-    return next(ApiError.internalError(err));
-  }
-});
-
-app.get("/catalog", authMiddleware, async (req, res, next) => {
-  try {
-    res.render("./pages/catalog", {
-      content: global.cachedCmsContent.sortedCmsContent.catalog,
-      products: global.cachedCmsContent.products,
-      req,
-    });
-  } catch (err) {
-    return next(ApiError.internalError(err));
-  }
-});
-
-app.get("/contacts", authMiddleware, async (req, res, next) => {
-  try {
-    res.render("./pages/contacts", {
-      content: global.cachedCmsContent.sortedCmsContent.contacts,
-      req,
-    });
-  } catch (err) {
-    return next(ApiError.internalError(err));
-  }
-});
-
-app.use(authRoute);
-app.use("/admin", adminRoute);
 app.use(clientRoute);
+app.use("/admin", adminRoute);
+app.use(authRoute);
 
 //Обработка ошибок
 app.use(errorHandler);

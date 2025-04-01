@@ -1,6 +1,6 @@
-const { get } = require("../routes/authRoute");
-const ApiError = require("../models/Error");
-const { dbRequest, dbErrorHandler, pool } = require("../models/DB");
+const { get } = require("../routes/auth-route");
+const ApiError = require("../utils/api-error");
+const { dbRequest, dbErrorHandler, pool } = require("./DB");
 
 class DB {
   static async getPageContentSortedByPage() {

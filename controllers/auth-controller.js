@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const ApiError = require("../models/Error");
+const ApiError = require("../utils/api-error");
 const secret = process.env.SECRET;
 const admin_password = process.env.ADMIN_PASSWORD;
 const jwt_time = 24 * 60 * 60 * 1000;

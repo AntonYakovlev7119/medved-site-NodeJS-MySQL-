@@ -12,7 +12,7 @@ const pool = mysql.createPool(dbPoolConfig).promise();
 
 exports.pool = pool;
 
-exports.dbRequest = async (sql, data, dbAction, connection) => {
+const dbRequest = async (sql, data, dbAction, connection) => {
   if (!connection) {
     return pool
       .query(sql, data)
@@ -46,6 +46,9 @@ exports.dbRequest = async (sql, data, dbAction, connection) => {
   }
 };
 
-exports.dbErrorHandler = async (error) => {
-  console.error(error);
+const dbErrorHandler = async (error) => {
+  // console.error(error);
 };
+
+exports.dbRequest = dbRequest;
+exports.dbErrorHandler = dbErrorHandler;

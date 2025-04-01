@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const ApiError = require("../models/Error");
+const ApiError = require("../utils/api-error");
 const secret = process.env.SECRET;
 
 module.exports = function (req, res, next) {
